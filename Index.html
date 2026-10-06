@@ -1,0 +1,2801 @@
+```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ASAWA Quest 3D ❤️</title>
+
+<style>
+
+*{
+    box-sizing:border-box;
+    margin:0;
+    padding:0;
+}
+
+html,
+body{
+    width:100%;
+    height:100%;
+    overflow:hidden;
+    font-family:Arial,Helvetica,sans-serif;
+    background:#120817;
+}
+
+#game{
+    position:fixed;
+    inset:0;
+}
+
+canvas{
+    display:block;
+}
+
+/* =========================
+   HUD
+========================= */
+
+#hud{
+    position:fixed;
+    top:18px;
+    left:50%;
+    transform:translateX(-50%);
+    width:min(900px,92%);
+    z-index:10;
+    pointer-events:none;
+}
+
+.hudBox{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    gap:12px;
+    padding:12px 18px;
+    border-radius:18px;
+
+    color:white;
+
+    background:rgba(45,10,30,.72);
+
+    backdrop-filter:blur(12px);
+
+    border:1px solid rgba(255,255,255,.2);
+
+    box-shadow:
+        0 10px 30px rgba(0,0,0,.25);
+}
+
+.hudItem{
+    white-space:nowrap;
+    font-size:15px;
+}
+
+.hudItem span{
+    color:#ff8fb5;
+    font-weight:bold;
+}
+
+/* =========================
+   MOUSE INFO
+========================= */
+
+#mouseInfo{
+    position:fixed;
+    top:85px;
+    left:50%;
+    transform:translateX(-50%);
+
+    z-index:10;
+
+    color:#ffe6ef;
+
+    background:rgba(30,5,20,.7);
+
+    border:1px solid rgba(255,255,255,.15);
+
+    padding:8px 16px;
+
+    border-radius:20px;
+
+    font-size:13px;
+
+    pointer-events:none;
+
+    transition:.4s;
+}
+
+/* =========================
+   MESSAGE
+========================= */
+
+#message{
+    position:fixed;
+
+    left:50%;
+    bottom:30px;
+
+    transform:translateX(-50%);
+
+    z-index:10;
+
+    color:white;
+
+    background:rgba(45,10,30,.8);
+
+    backdrop-filter:blur(10px);
+
+    padding:12px 22px;
+
+    border-radius:30px;
+
+    border:1px solid rgba(255,255,255,.2);
+
+    font-size:15px;
+
+    text-align:center;
+
+    pointer-events:none;
+}
+
+/* =========================
+   OVERLAYS
+========================= */
+
+.overlay{
+    position:fixed;
+    inset:0;
+
+    z-index:50;
+
+    display:flex;
+
+    justify-content:center;
+    align-items:center;
+
+    background:
+        radial-gradient(
+            circle at center,
+            rgba(255,110,160,.18),
+            rgba(10,4,15,.96)
+        );
+
+    padding:20px;
+}
+
+.panel{
+    width:min(650px,94%);
+
+    max-height:90vh;
+
+    overflow:auto;
+
+    text-align:center;
+
+    padding:40px;
+
+    border-radius:30px;
+
+    color:white;
+
+    background:
+        linear-gradient(
+            145deg,
+            rgba(80,15,50,.94),
+            rgba(30,8,25,.96)
+        );
+
+    border:1px solid rgba(255,160,190,.3);
+
+    box-shadow:
+        0 30px 100px rgba(0,0,0,.55),
+        inset 0 0 50px rgba(255,100,160,.06);
+}
+
+.logoHeart{
+    font-size:90px;
+
+    animation:heartbeat 1.3s infinite;
+
+    margin-bottom:10px;
+}
+
+@keyframes heartbeat{
+
+    0%,100%{
+        transform:scale(1);
+    }
+
+    50%{
+        transform:scale(1.15);
+    }
+
+}
+
+h1{
+    font-size:42px;
+
+    color:#ff91b7;
+
+    margin-bottom:12px;
+}
+
+h2{
+    color:#ff91b7;
+
+    margin-bottom:15px;
+}
+
+.panel p{
+    line-height:1.7;
+
+    color:#ffdce8;
+
+    margin-bottom:18px;
+}
+
+.startButton{
+    border:none;
+
+    border-radius:50px;
+
+    padding:15px 32px;
+
+    font-size:17px;
+
+    font-weight:bold;
+
+    color:white;
+
+    background:
+        linear-gradient(
+            135deg,
+            #ff4f91,
+            #d92e6b
+        );
+
+    cursor:pointer;
+
+    box-shadow:
+        0 10px 25px
+        rgba(255,60,130,.3);
+
+    transition:.2s;
+}
+
+.startButton:hover{
+    transform:
+        translateY(-3px)
+        scale(1.03);
+
+    box-shadow:
+        0 15px 30px
+        rgba(255,60,130,.4);
+}
+
+.hidden{
+    display:none!important;
+}
+
+/* =========================
+   MOBILE CONTROLS
+========================= */
+
+#mobileControls{
+    position:fixed;
+
+    left:20px;
+    bottom:75px;
+
+    z-index:15;
+
+    display:none;
+}
+
+.controlGrid{
+    display:grid;
+
+    grid-template-columns:
+        55px 55px 55px;
+
+    grid-template-rows:
+        55px 55px;
+
+    gap:5px;
+}
+
+.control{
+    border:none;
+
+    border-radius:14px;
+
+    background:
+        rgba(50,10,35,.75);
+
+    color:white;
+
+    font-size:22px;
+
+    border:
+        1px solid
+        rgba(255,255,255,.2);
+
+    touch-action:none;
+}
+
+.up{
+    grid-column:2;
+}
+
+.left{
+    grid-column:1;
+    grid-row:2;
+}
+
+.down{
+    grid-column:2;
+    grid-row:2;
+}
+
+.right{
+    grid-column:3;
+    grid-row:2;
+}
+
+/* =========================
+   LETTER
+========================= */
+
+.letter{
+    text-align:left;
+
+    background:
+        rgba(255,255,255,.07);
+
+    border:
+        1px solid
+        rgba(255,150,180,.2);
+
+    padding:25px;
+
+    border-radius:20px;
+
+    margin:20px 0;
+}
+
+.letter p{
+    color:#ffe7ef;
+
+    margin-bottom:13px;
+}
+
+.signature{
+    text-align:center;
+
+    color:#ff91b7;
+
+    font-weight:bold;
+
+    font-size:20px;
+}
+
+/* =========================
+   MOBILE
+========================= */
+
+@media(max-width:700px){
+
+    .hudBox{
+        padding:9px 10px;
+    }
+
+    .hudItem{
+        font-size:12px;
+    }
+
+    #mouseInfo{
+        display:none;
+    }
+
+    #message{
+        bottom:18px;
+
+        font-size:12px;
+
+        max-width:90%;
+    }
+
+    .panel{
+        padding:28px 20px;
+    }
+
+    h1{
+        font-size:31px;
+    }
+
+    .logoHeart{
+        font-size:70px;
+    }
+
+    #mobileControls{
+        display:block;
+    }
+
+}
+
+</style>
+</head>
+
+<body>
+
+<div id="game"></div>
+
+
+<!-- HUD -->
+
+<div id="hud">
+
+    <div class="hudBox">
+
+        <div class="hudItem">
+            ❤️ Hearts:
+            <span id="score">0</span>/12
+        </div>
+
+        <div class="hudItem">
+            💗 Asawa:
+            <span id="love">100</span>%
+        </div>
+
+        <div class="hudItem">
+            🗺️ Level:
+            <span id="level">1</span>
+        </div>
+
+    </div>
+
+</div>
+
+
+<!-- MOUSE INSTRUCTION -->
+
+<div id="mouseInfo">
+    🖱️ Click + drag to look around • WASD to move • ESC to release
+</div>
+
+
+<!-- MESSAGE -->
+
+<div id="message">
+    Collect all the hearts ❤️
+</div>
+
+
+<!-- MOBILE CONTROLS -->
+
+<div id="mobileControls">
+
+    <div class="controlGrid">
+
+        <button
+            class="control up"
+            id="upBtn">
+            ▲
+        </button>
+
+        <button
+            class="control left"
+            id="leftBtn">
+            ◀
+        </button>
+
+        <button
+            class="control down"
+            id="downBtn">
+            ▼
+        </button>
+
+        <button
+            class="control right"
+            id="rightBtn">
+            ▶
+        </button>
+
+    </div>
+
+</div>
+
+
+<!-- START SCREEN -->
+
+<div class="overlay" id="startScreen">
+
+    <div class="panel">
+
+        <div class="logoHeart">
+            💖
+        </div>
+
+        <h1>
+            ASAWA QUEST 3D
+        </h1>
+
+        <p>
+            Welcome to a little 3D adventure
+            made especially for you. ❤️
+        </p>
+
+        <p>
+            Explore the world, collect all
+            <b>12 hearts</b>, avoid the jealous
+            monsters, and find the magical heart.
+        </p>
+
+        <p>
+            <b>PC</b><br>
+            WASD / Arrow Keys = Move<br>
+            Mouse = Look Around<br>
+            Click the game to control the camera
+        </p>
+
+        <p>
+            <b>Mobile</b><br>
+            Use the on-screen controls.
+        </p>
+
+        <button
+            class="startButton"
+            onclick="startGame()">
+
+            START ASAWA QUEST ❤️
+
+        </button>
+
+    </div>
+
+</div>
+
+
+<!-- QUESTION -->
+
+<div
+    class="overlay hidden"
+    id="questionScreen">
+
+    <div class="panel">
+
+        <div class="logoHeart">
+            💕
+        </div>
+
+        <h1>
+            YOU MADE IT!
+        </h1>
+
+        <p>
+            You collected every heart
+            and reached the final destination.
+        </p>
+
+        <h2>
+            One final question...
+        </h2>
+
+        <p>
+            Will you continue this adventure
+            with me?
+        </p>
+
+        <button
+            class="startButton"
+            onclick="finishGame()">
+
+            YES, FOREVER ❤️
+
+        </button>
+
+    </div>
+
+</div>
+
+
+<!-- FINAL -->
+
+<div
+    class="overlay hidden"
+    id="finalScreen">
+
+    <div class="panel">
+
+        <div class="logoHeart">
+            💖
+        </div>
+
+        <h1>
+            YOU WON! 🎉
+        </h1>
+
+        <div class="letter">
+
+            <p>
+                Dear My ASAWA,
+            </p>
+
+            <p>
+                You made it through my little
+                3D Love Quest. ❤️
+            </p>
+
+            <p>
+                Every heart you collected represents
+                one of the many reasons you are
+                special to me.
+            </p>
+
+            <p>
+                Life is like a game.
+                Sometimes there are easy levels,
+                and sometimes there are difficult ones.
+            </p>
+
+            <p>
+                There will be obstacles,
+                unexpected turns,
+                and moments when we might
+                feel like giving up.
+            </p>
+
+            <p>
+                But if I get to choose who I want
+                beside me through every level...
+            </p>
+
+            <p>
+                <b>
+                    I choose you.
+                </b>
+            </p>
+
+            <p>
+                Thank you for every smile,
+                every memory,
+                every conversation,
+                and every moment.
+            </p>
+
+            <p>
+                I hope we continue this adventure
+                together for a very, very long time.
+            </p>
+
+            <p
+                style="
+                text-align:center;
+                font-size:25px;
+                ">
+
+                I LOVE YOU. ❤️
+
+            </p>
+
+        </div>
+
+        <div class="signature">
+            Forever yours, 💕
+        </div>
+
+        <br>
+
+        <button
+            class="startButton"
+            onclick="location.reload()">
+
+            PLAY AGAIN 🔄
+
+        </button>
+
+    </div>
+
+</div>
+
+
+<!-- THREE.JS -->
+
+<script src="https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.min.js"></script>
+
+
+<script>
+
+/* =========================================================
+   THREE.JS SETUP
+========================================================= */
+
+const container =
+    document.getElementById("game");
+
+
+const scene =
+    new THREE.Scene();
+
+
+scene.background =
+    new THREE.Color(
+        0x160919
+    );
+
+
+scene.fog =
+    new THREE.Fog(
+        0x160919,
+        25,
+        90
+    );
+
+
+const camera =
+    new THREE.PerspectiveCamera(
+        65,
+        window.innerWidth /
+        window.innerHeight,
+        .1,
+        200
+    );
+
+
+const renderer =
+    new THREE.WebGLRenderer({
+        antialias:true
+    });
+
+
+renderer.setPixelRatio(
+    Math.min(
+        window.devicePixelRatio,
+        2
+    )
+);
+
+
+renderer.setSize(
+    window.innerWidth,
+    window.innerHeight
+);
+
+
+renderer.shadowMap.enabled = true;
+
+
+renderer.shadowMap.type =
+    THREE.PCFSoftShadowMap;
+
+
+container.appendChild(
+    renderer.domElement
+);
+
+
+/* =========================================================
+   LIGHTS
+========================================================= */
+
+const ambient =
+    new THREE.AmbientLight(
+        0xffd8e7,
+        1.8
+    );
+
+scene.add(ambient);
+
+
+const moonLight =
+    new THREE.DirectionalLight(
+        0xffb5d0,
+        3
+    );
+
+
+moonLight.position.set(
+    15,
+    30,
+    10
+);
+
+
+moonLight.castShadow = true;
+
+
+moonLight.shadow.mapSize.width =
+    2048;
+
+moonLight.shadow.mapSize.height =
+    2048;
+
+
+scene.add(moonLight);
+
+
+const pinkLight =
+    new THREE.PointLight(
+        0xff3f8e,
+        15,
+        40
+    );
+
+
+pinkLight.position.set(
+    0,
+    8,
+    0
+);
+
+
+scene.add(pinkLight);
+
+
+/* =========================================================
+   GROUND
+========================================================= */
+
+const WORLD_SIZE = 80;
+
+
+const ground =
+    new THREE.Mesh(
+
+        new THREE.PlaneGeometry(
+            WORLD_SIZE,
+            WORLD_SIZE
+        ),
+
+        new THREE.MeshStandardMaterial({
+            color:0x32142a,
+            roughness:.9
+        })
+
+    );
+
+
+ground.rotation.x =
+    -Math.PI/2;
+
+
+ground.receiveShadow = true;
+
+
+scene.add(ground);
+
+
+/* GRID */
+
+const grid =
+    new THREE.GridHelper(
+        WORLD_SIZE,
+        40,
+        0xff4f91,
+        0x5a2445
+    );
+
+
+grid.position.y =
+    .03;
+
+
+grid.material.opacity =
+    .18;
+
+
+grid.material.transparent =
+    true;
+
+
+scene.add(grid);
+
+
+/* =========================================================
+   TREES
+========================================================= */
+
+function createTree(
+    x,
+    z
+){
+
+    const group =
+        new THREE.Group();
+
+
+    const trunk =
+        new THREE.Mesh(
+
+            new THREE.CylinderGeometry(
+                .5,
+                .7,
+                3,
+                8
+            ),
+
+            new THREE.MeshStandardMaterial({
+                color:0x5c2c30
+            })
+
+        );
+
+
+    trunk.position.y =
+        1.5;
+
+
+    trunk.castShadow =
+        true;
+
+
+    group.add(trunk);
+
+
+    const leaves =
+        new THREE.Mesh(
+
+            new THREE.SphereGeometry(
+                2.2,
+                12,
+                12
+            ),
+
+            new THREE.MeshStandardMaterial({
+                color:0x762b54
+            })
+
+        );
+
+
+    leaves.position.y =
+        4;
+
+
+    leaves.castShadow =
+        true;
+
+
+    group.add(leaves);
+
+
+    group.position.set(
+        x,
+        0,
+        z
+    );
+
+
+    scene.add(group);
+
+}
+
+
+for(
+    let i=0;
+    i<25;
+    i++
+){
+
+    let x =
+        (Math.random()-.5)*70;
+
+
+    let z =
+        (Math.random()-.5)*70;
+
+
+    if(
+        Math.abs(x)<10 &&
+        Math.abs(z)<10
+    ){
+
+        x += 15;
+
+    }
+
+
+    createTree(
+        x,
+        z
+    );
+
+}
+
+
+/* =========================================================
+   PLAYER
+========================================================= */
+
+const player =
+    new THREE.Group();
+
+
+scene.add(player);
+
+
+/* Body */
+
+const body =
+    new THREE.Mesh(
+
+        new THREE.SphereGeometry(
+            1.15,
+            20,
+            20
+        ),
+
+        new THREE.MeshStandardMaterial({
+            color:0xff739f,
+            roughness:.5
+        })
+
+    );
+
+
+body.position.y =
+    1.25;
+
+
+body.castShadow =
+    true;
+
+
+player.add(body);
+
+
+/* Head */
+
+const head =
+    new THREE.Mesh(
+
+        new THREE.SphereGeometry(
+            .85,
+            20,
+            20
+        ),
+
+        new THREE.MeshStandardMaterial({
+            color:0xffc0d0
+        })
+
+    );
+
+
+head.position.y =
+    2.45;
+
+
+head.castShadow =
+    true;
+
+
+player.add(head);
+
+
+/* Ears */
+
+function createEar(x){
+
+    const ear =
+        new THREE.Mesh(
+
+            new THREE.SphereGeometry(
+                .3,
+                12,
+                12
+            ),
+
+            new THREE.MeshStandardMaterial({
+                color:0xffa0b9
+            })
+
+        );
+
+
+    ear.position.set(
+        x,
+        2.65,
+        0
+    );
+
+
+    player.add(ear);
+
+}
+
+
+createEar(-.55);
+createEar(.55);
+
+
+/* Eyes */
+
+function createEye(x){
+
+    const eye =
+        new THREE.Mesh(
+
+            new THREE.SphereGeometry(
+                .09,
+                10,
+                10
+            ),
+
+            new THREE.MeshBasicMaterial({
+                color:0x24101b
+            })
+
+        );
+
+
+    eye.position.set(
+        x,
+        2.55,
+        .75
+    );
+
+
+    player.add(eye);
+
+}
+
+
+createEye(-.28);
+createEye(.28);
+
+
+/* Starting position */
+
+player.position.set(
+    0,
+    0,
+    30
+);
+
+
+/* =========================================================
+   HEARTS
+========================================================= */
+
+const hearts = [];
+
+
+function createHeart(
+    x,
+    z
+){
+
+    const group =
+        new THREE.Group();
+
+
+    const material =
+        new THREE.MeshStandardMaterial({
+
+            color:0xff2f70,
+
+            emissive:0xff174f,
+
+            emissiveIntensity:1.5,
+
+            roughness:.25,
+
+            metalness:.2
+
+        });
+
+
+    const sphere1 =
+        new THREE.Mesh(
+
+            new THREE.SphereGeometry(
+                .55,
+                16,
+                16
+            ),
+
+            material
+
+        );
+
+
+    const sphere2 =
+        new THREE.Mesh(
+
+            new THREE.SphereGeometry(
+                .55,
+                16,
+                16
+            ),
+
+            material
+
+        );
+
+
+    sphere1.position.x =
+        -.38;
+
+
+    sphere2.position.x =
+        .38;
+
+
+    const bottom =
+        new THREE.Mesh(
+
+            new THREE.ConeGeometry(
+                .78,
+                1.2,
+                4
+            ),
+
+            material
+
+        );
+
+
+    bottom.rotation.z =
+        Math.PI;
+
+
+    bottom.position.y =
+        -.5;
+
+
+    group.add(
+        sphere1,
+        sphere2,
+        bottom
+    );
+
+
+    group.position.set(
+        x,
+        2,
+        z
+    );
+
+
+    scene.add(group);
+
+
+    hearts.push({
+
+        object:group,
+
+        collected:false,
+
+        baseY:2
+
+    });
+
+}
+
+
+const heartPositions = [
+
+    [-25,20],
+    [-12,10],
+    [5,17],
+    [22,25],
+
+    [-25,2],
+    [-8,-5],
+    [10,-3],
+    [28,5],
+
+    [-25,-18],
+    [-8,-25],
+    [12,-20],
+    [25,-10]
+
+];
+
+
+heartPositions.forEach(
+    p=>{
+        createHeart(
+            p[0],
+            p[1]
+        );
+    }
+);
+
+
+/* =========================================================
+   ENEMIES
+========================================================= */
+
+const enemies = [];
+
+
+function createEnemy(
+    x,
+    z
+){
+
+    const enemy =
+        new THREE.Group();
+
+
+    const body =
+        new THREE.Mesh(
+
+            new THREE.SphereGeometry(
+                1.2,
+                16,
+                16
+            ),
+
+            new THREE.MeshStandardMaterial({
+
+                color:0x42112e,
+
+                emissive:0x250018,
+
+                emissiveIntensity:.7
+
+            })
+
+        );
+
+
+    body.position.y =
+        1.2;
+
+
+    body.castShadow =
+        true;
+
+
+    enemy.add(body);
+
+
+    const eyeMaterial =
+        new THREE.MeshBasicMaterial({
+            color:0xff315f
+        });
+
+
+    const eye1 =
+        new THREE.Mesh(
+
+            new THREE.SphereGeometry(
+                .13,
+                8,
+                8
+            ),
+
+            eyeMaterial
+
+        );
+
+
+    eye1.position.set(
+        -.3,
+        1.45,
+        1
+    );
+
+
+    const eye2 =
+        eye1.clone();
+
+
+    eye2.position.x =
+        .3;
+
+
+    enemy.add(
+        eye1,
+        eye2
+    );
+
+
+    enemy.position.set(
+        x,
+        0,
+        z
+    );
+
+
+    scene.add(enemy);
+
+
+    enemies.push({
+
+        object:enemy,
+
+        startX:x,
+
+        startZ:z,
+
+        phase:
+            Math.random()*10
+
+    });
+
+}
+
+
+createEnemy(-18,8);
+createEnemy(2,5);
+createEnemy(18,-2);
+createEnemy(-15,-12);
+createEnemy(18,-18);
+
+
+/* =========================================================
+   GOAL
+========================================================= */
+
+const goal =
+    new THREE.Group();
+
+
+const goalCore =
+    new THREE.Mesh(
+
+        new THREE.SphereGeometry(
+            1.7,
+            24,
+            24
+        ),
+
+        new THREE.MeshStandardMaterial({
+
+            color:0xff72aa,
+
+            emissive:0xff2975,
+
+            emissiveIntensity:2
+
+        })
+
+    );
+
+
+goalCore.position.y =
+    2.5;
+
+
+goal.add(goalCore);
+
+
+const ring =
+    new THREE.Mesh(
+
+        new THREE.TorusGeometry(
+            2.5,
+            .12,
+            12,
+            48
+        ),
+
+        new THREE.MeshBasicMaterial({
+            color:0xff9fc2
+        })
+
+    );
+
+
+ring.rotation.x =
+    Math.PI/2;
+
+
+ring.position.y =
+    .3;
+
+
+goal.add(ring);
+
+
+goal.position.set(
+    30,
+    0,
+    -28
+);
+
+
+scene.add(goal);
+
+
+/* =========================================================
+   OBSTACLES
+========================================================= */
+
+const obstacles = [];
+
+
+function createObstacle(
+    x,
+    z,
+    w,
+    d
+){
+
+    const object =
+        new THREE.Mesh(
+
+            new THREE.BoxGeometry(
+                w,
+                3,
+                d
+            ),
+
+            new THREE.MeshStandardMaterial({
+                color:0x632444,
+                roughness:.8
+            })
+
+        );
+
+
+    object.position.set(
+        x,
+        1.5,
+        z
+    );
+
+
+    object.castShadow =
+        true;
+
+
+    object.receiveShadow =
+        true;
+
+
+    scene.add(object);
+
+
+    obstacles.push(
+        object
+    );
+
+}
+
+
+createObstacle(
+    -10,
+    22,
+    15,
+    2
+);
+
+createObstacle(
+    10,
+    12,
+    2,
+    15
+);
+
+createObstacle(
+    -5,
+    -2,
+    16,
+    2
+);
+
+createObstacle(
+    14,
+    -12,
+    2,
+    15
+);
+
+createObstacle(
+    -18,
+    -20,
+    18,
+    2
+);
+
+createObstacle(
+    5,
+    -25,
+    18,
+    2
+);
+
+
+/* =========================================================
+   KEY CONTROLS
+========================================================= */
+
+const keys = {
+
+    forward:false,
+
+    backward:false,
+
+    left:false,
+
+    right:false
+
+};
+
+
+window.addEventListener(
+    "keydown",
+    event=>{
+
+        if(
+            event.key==="w" ||
+            event.key==="W" ||
+            event.key==="ArrowUp"
+        ){
+
+            keys.forward=true;
+
+        }
+
+
+        if(
+            event.key==="s" ||
+            event.key==="S" ||
+            event.key==="ArrowDown"
+        ){
+
+            keys.backward=true;
+
+        }
+
+
+        if(
+            event.key==="a" ||
+            event.key==="A" ||
+            event.key==="ArrowLeft"
+        ){
+
+            keys.left=true;
+
+        }
+
+
+        if(
+            event.key==="d" ||
+            event.key==="D" ||
+            event.key==="ArrowRight"
+        ){
+
+            keys.right=true;
+
+        }
+
+    }
+);
+
+
+window.addEventListener(
+    "keyup",
+    event=>{
+
+        if(
+            event.key==="w" ||
+            event.key==="W" ||
+            event.key==="ArrowUp"
+        ){
+
+            keys.forward=false;
+
+        }
+
+
+        if(
+            event.key==="s" ||
+            event.key==="S" ||
+            event.key==="ArrowDown"
+        ){
+
+            keys.backward=false;
+
+        }
+
+
+        if(
+            event.key==="a" ||
+            event.key==="A" ||
+            event.key==="ArrowLeft"
+        ){
+
+            keys.left=false;
+
+        }
+
+
+        if(
+            event.key==="d" ||
+            event.key==="D" ||
+            event.key==="ArrowRight"
+        ){
+
+            keys.right=false;
+
+        }
+
+    }
+);
+
+
+/* =========================================================
+   MOUSE CAMERA
+========================================================= */
+
+let cameraYaw = 0;
+
+let cameraPitch = 0.42;
+
+let cameraDistance = 13;
+
+let mouseDown = false;
+
+let lastMouseX = 0;
+
+let lastMouseY = 0;
+
+
+renderer.domElement.addEventListener(
+    "mousedown",
+    event=>{
+
+        mouseDown=true;
+
+        lastMouseX =
+            event.clientX;
+
+        lastMouseY =
+            event.clientY;
+
+        renderer.domElement
+            .requestPointerLock();
+
+    }
+);
+
+
+document.addEventListener(
+    "mousemove",
+    event=>{
+
+        if(
+            document.pointerLockElement !==
+            renderer.domElement
+        ){
+
+            return;
+
+        }
+
+
+        const movementX =
+            event.movementX || 0;
+
+        const movementY =
+            event.movementY || 0;
+
+
+        cameraYaw -=
+            movementX * .003;
+
+
+        cameraPitch -=
+            movementY * .002;
+
+
+        cameraPitch =
+            THREE.MathUtils.clamp(
+                cameraPitch,
+                .15,
+                1.25
+            );
+
+    }
+);
+
+
+document.addEventListener(
+    "mouseup",
+    ()=>{
+
+        mouseDown=false;
+
+    }
+);
+
+
+/* Mouse wheel = zoom */
+
+renderer.domElement.addEventListener(
+    "wheel",
+    event=>{
+
+        cameraDistance +=
+            event.deltaY * .01;
+
+
+        cameraDistance =
+            THREE.MathUtils.clamp(
+                cameraDistance,
+                6,
+                20
+            );
+
+    },
+    {passive:true}
+);
+
+
+/* =========================================================
+   TOUCH CAMERA
+========================================================= */
+
+let touchX = 0;
+let touchY = 0;
+
+
+renderer.domElement.addEventListener(
+    "touchstart",
+    event=>{
+
+        if(event.touches.length===1){
+
+            touchX =
+                event.touches[0].clientX;
+
+            touchY =
+                event.touches[0].clientY;
+
+        }
+
+    },
+    {passive:true}
+);
+
+
+renderer.domElement.addEventListener(
+    "touchmove",
+    event=>{
+
+        if(event.touches.length!==1){
+            return;
+        }
+
+
+        const x =
+            event.touches[0].clientX;
+
+        const y =
+            event.touches[0].clientY;
+
+
+        const dx =
+            x-touchX;
+
+        const dy =
+            y-touchY;
+
+
+        cameraYaw -=
+            dx*.005;
+
+
+        cameraPitch -=
+            dy*.003;
+
+
+        cameraPitch =
+            THREE.MathUtils.clamp(
+                cameraPitch,
+                .15,
+                1.25
+            );
+
+
+        touchX=x;
+        touchY=y;
+
+    },
+    {passive:true}
+);
+
+
+/* =========================================================
+   MOBILE BUTTONS
+========================================================= */
+
+function holdButton(
+    id,
+    key
+){
+
+    const button =
+        document.getElementById(id);
+
+
+    button.addEventListener(
+        "touchstart",
+        event=>{
+
+            event.preventDefault();
+
+            keys[key]=true;
+
+        },
+        {passive:false}
+    );
+
+
+    button.addEventListener(
+        "touchend",
+        event=>{
+
+            event.preventDefault();
+
+            keys[key]=false;
+
+        },
+        {passive:false}
+    );
+
+
+    button.addEventListener(
+        "touchcancel",
+        ()=>{
+
+            keys[key]=false;
+
+        }
+    );
+
+}
+
+
+holdButton(
+    "upBtn",
+    "forward"
+);
+
+holdButton(
+    "downBtn",
+    "backward"
+);
+
+holdButton(
+    "leftBtn",
+    "left"
+);
+
+holdButton(
+    "rightBtn",
+    "right"
+);
+
+
+/* =========================================================
+   GAME VARIABLES
+========================================================= */
+
+let gameStarted =
+    false;
+
+let score =
+    0;
+
+let love =
+    100;
+
+let level =
+    1;
+
+let lastTime =
+    0;
+
+
+/* =========================================================
+   START GAME
+========================================================= */
+
+function startGame(){
+
+    gameStarted=true;
+
+    document
+        .getElementById(
+            "startScreen"
+        )
+        .classList.add(
+            "hidden"
+        );
+
+
+    setMessage(
+        "Collect all 12 hearts ❤️"
+    );
+
+
+    renderer.domElement.focus();
+
+}
+
+
+/* =========================================================
+   MESSAGE
+========================================================= */
+
+function setMessage(
+    text
+){
+
+    document
+        .getElementById(
+            "message"
+        )
+        .innerText =
+        text;
+
+}
+
+
+/* =========================================================
+   COLLISION
+========================================================= */
+
+function isBlocked(
+    position
+){
+
+    const radius =
+        1.1;
+
+
+    for(
+        const obstacle
+        of obstacles
+    ){
+
+        const box =
+            new THREE.Box3()
+                .setFromObject(
+                    obstacle
+                );
+
+
+        box.expandByScalar(
+            .3
+        );
+
+
+        if(
+
+            position.x >
+            box.min.x-radius &&
+
+            position.x <
+            box.max.x+radius &&
+
+            position.z >
+            box.min.z-radius &&
+
+            position.z <
+            box.max.z+radius
+
+        ){
+
+            return true;
+
+        }
+
+    }
+
+
+    return false;
+
+}
+
+
+/* =========================================================
+   PLAYER MOVEMENT
+========================================================= */
+
+function updatePlayer(
+    delta
+){
+
+    if(!gameStarted){
+        return;
+    }
+
+
+    const speed =
+        12*delta;
+
+
+    let forward =
+        0;
+
+    let strafe =
+        0;
+
+
+    if(keys.forward){
+        forward += 1;
+    }
+
+
+    if(keys.backward){
+        forward -= 1;
+    }
+
+
+    if(keys.left){
+        strafe -= 1;
+    }
+
+
+    if(keys.right){
+        strafe += 1;
+    }
+
+
+    if(
+        forward===0 &&
+        strafe===0
+    ){
+
+        return;
+
+    }
+
+
+    const forwardVector =
+        new THREE.Vector3(
+            Math.sin(cameraYaw),
+            0,
+            Math.cos(cameraYaw)
+        );
+
+
+    const rightVector =
+        new THREE.Vector3(
+            Math.cos(cameraYaw),
+            0,
+            -Math.sin(cameraYaw)
+        );
+
+
+    const direction =
+        new THREE.Vector3();
+
+
+    direction
+        .addScaledVector(
+            forwardVector,
+            -forward
+        );
+
+
+    direction
+        .addScaledVector(
+            rightVector,
+            strafe
+        );
+
+
+    direction.normalize();
+
+
+    const next =
+        player.position.clone();
+
+
+    next.x +=
+        direction.x*speed;
+
+
+    next.z +=
+        direction.z*speed;
+
+
+    next.x =
+        THREE.MathUtils.clamp(
+            next.x,
+            -37,
+            37
+        );
+
+
+    next.z =
+        THREE.MathUtils.clamp(
+            next.z,
+            -37,
+            37
+        );
+
+
+    if(
+        !isBlocked(next)
+    ){
+
+        player.position.copy(
+            next
+        );
+
+    }
+
+
+    /* Character faces movement */
+
+    if(direction.length()>0){
+
+        const targetRotation =
+            Math.atan2(
+                direction.x,
+                direction.z
+            );
+
+
+        player.rotation.y =
+            THREE.MathUtils.lerp(
+                player.rotation.y,
+                targetRotation,
+                .18
+            );
+
+    }
+
+
+    /* Walking animation */
+
+    body.position.y =
+        1.25 +
+        Math.sin(
+            performance.now()*.015
+        )*.07;
+
+}
+
+
+/* =========================================================
+   HEARTS
+========================================================= */
+
+function updateHearts(
+    time
+){
+
+    hearts.forEach(
+        heart=>{
+
+            if(
+                heart.collected
+            ){
+
+                return;
+
+            }
+
+
+            heart.object.rotation.y +=
+                .025;
+
+
+            heart.object.position.y =
+                heart.baseY +
+                Math.sin(
+                    time*.003 +
+                    heart.object.position.x
+                )*.4;
+
+
+            const distance =
+                player.position
+                    .distanceTo(
+                        heart.object
+                            .position
+                    );
+
+
+            if(
+                distance<2.4
+            ){
+
+                heart.collected=true;
+
+
+                scene.remove(
+                    heart.object
+                );
+
+
+                score++;
+
+
+                document
+                    .getElementById(
+                        "score"
+                    )
+                    .innerText =
+                    score;
+
+
+                if(score<12){
+
+                    setMessage(
+                        "Heart collected! ❤️ "+
+                        score+
+                        "/12"
+                    );
+
+                }
+                else{
+
+                    setMessage(
+                        "All hearts collected! Find the 💝"
+                    );
+
+                }
+
+            }
+
+        }
+    );
+
+}
+
+
+/* =========================================================
+   ENEMIES
+========================================================= */
+
+function updateEnemies(
+    time
+){
+
+    enemies.forEach(
+        enemy=>{
+
+            const t =
+                time*.001 +
+                enemy.phase;
+
+
+            enemy.object.position.x =
+                enemy.startX +
+                Math.sin(t*.8)*6;
+
+
+            enemy.object.position.z =
+                enemy.startZ +
+                Math.cos(t*.7)*4;
+
+
+            enemy.object.rotation.y +=
+                .02;
+
+
+            const distance =
+                player.position
+                    .distanceTo(
+                        enemy.object
+                            .position
+                    );
+
+
+            if(
+                distance<2.5
+            ){
+
+                love -=
+                    .25;
+
+
+                document
+                    .getElementById(
+                        "love"
+                    )
+                    .innerText =
+                    Math.max(
+                        0,
+                        Math.floor(love)
+                    );
+
+
+                setMessage(
+                    "A jealous monster attacked! 💔"
+                );
+
+
+                if(
+                    love<=0
+                ){
+
+                    love=100;
+
+
+                    player.position.set(
+                        0,
+                        0,
+                        30
+                    );
+
+
+                    document
+                        .getElementById(
+                            "love"
+                        )
+                        .innerText =
+                        "100";
+
+
+                    setMessage(
+                        "Love restored! ❤️"
+                    );
+
+                }
+
+            }
+
+        }
+    );
+
+}
+
+
+/* =========================================================
+   GOAL
+========================================================= */
+
+function checkGoal(){
+
+    const distance =
+        player.position
+            .distanceTo(
+                goal.position
+            );
+
+
+    if(
+        distance<4
+    ){
+
+        if(score<12){
+
+            setMessage(
+                "You need all 12 hearts first! ❤️"
+            );
+
+            return;
+
+        }
+
+
+        gameStarted=false;
+
+
+        document
+            .getElementById(
+                "questionScreen"
+            )
+            .classList.remove(
+                "hidden"
+            );
+
+    }
+
+}
+
+
+/* =========================================================
+   CAMERA
+========================================================= */
+
+function updateCamera(){
+
+    const horizontal =
+        Math.cos(
+            cameraPitch
+        ) *
+        cameraDistance;
+
+
+    const vertical =
+        Math.sin(
+            cameraPitch
+        ) *
+        cameraDistance;
+
+
+    const cameraX =
+        player.position.x +
+        Math.sin(cameraYaw) *
+        horizontal;
+
+
+    const cameraZ =
+        player.position.z +
+        Math.cos(cameraYaw) *
+        horizontal;
+
+
+    const cameraY =
+        player.position.y +
+        2 +
+        vertical;
+
+
+    const target =
+        new THREE.Vector3(
+            cameraX,
+            cameraY,
+            cameraZ
+        );
+
+
+    camera.position.lerp(
+        target,
+        .12
+    );
+
+
+    const lookAt =
+        player.position.clone();
+
+
+    lookAt.y +=
+        1.3;
+
+
+    camera.lookAt(
+        lookAt
+    );
+
+}
+
+
+/* =========================================================
+   GOAL ANIMATION
+========================================================= */
+
+function updateGoal(
+    time
+){
+
+    goalCore.rotation.y +=
+        .03;
+
+
+    goalCore.scale.setScalar(
+        1+
+        Math.sin(
+            time*.004
+        )*.12
+    );
+
+
+    ring.rotation.z +=
+        .025;
+
+}
+
+
+/* =========================================================
+   FINISH
+========================================================= */
+
+function finishGame(){
+
+    document
+        .getElementById(
+            "questionScreen"
+        )
+        .classList.add(
+            "hidden"
+        );
+
+
+    document
+        .getElementById(
+            "finalScreen"
+        )
+        .classList.remove(
+            "hidden"
+        );
+
+
+    createConfetti();
+
+}
+
+
+/* =========================================================
+   CONFETTI
+========================================================= */
+
+function createConfetti(){
+
+    const symbols = [
+        "❤️",
+        "💕",
+        "💖",
+        "💗",
+        "✨",
+        "🎉"
+    ];
+
+
+    for(
+        let i=0;
+        i<100;
+        i++
+    ){
+
+        const element =
+            document.createElement(
+                "div"
+            );
+
+
+        element.innerText =
+            symbols[
+                Math.floor(
+                    Math.random()*
+                    symbols.length
+                )
+            ];
+
+
+        element.style.position =
+            "fixed";
+
+
+        element.style.left =
+            Math.random()*
+            100+
+            "vw";
+
+
+        element.style.top =
+            "-30px";
+
+
+        element.style.fontSize =
+            15+
+            Math.random()*25+
+            "px";
+
+
+        element.style.zIndex =
+            "100";
+
+
+        element.style.transition =
+            "transform 3s linear,opacity 3s";
+
+
+        document.body.appendChild(
+            element
+        );
+
+
+        setTimeout(
+            ()=>{
+
+                element.style.transform =
+                    "translateY(110vh) rotate(720deg)";
+
+                element.style.opacity =
+                    "0";
+
+            },
+            50
+        );
+
+
+        setTimeout(
+            ()=>{
+
+                element.remove();
+
+            },
+            3500
+        );
+
+    }
+
+}
+
+
+/* =========================================================
+   ANIMATION LOOP
+========================================================= */
+
+function animate(
+    time
+){
+
+    requestAnimationFrame(
+        animate
+    );
+
+
+    const delta =
+        Math.min(
+            (time-lastTime)/
+            1000,
+            .05
+        );
+
+
+    lastTime =
+        time;
+
+
+    updatePlayer(
+        delta
+    );
+
+
+    updateHearts(
+        time
+    );
+
+
+    updateEnemies(
+        time
+    );
+
+
+    updateGoal(
+        time
+    );
+
+
+    updateCamera();
+
+
+    checkGoal();
+
+
+    renderer.render(
+        scene,
+        camera
+    );
+
+}
+
+
+animate(0);
+
+
+/* =========================================================
+   RESIZE
+========================================================= */
+
+window.addEventListener(
+    "resize",
+    ()=>{
+
+        camera.aspect =
+            window.innerWidth /
+            window.innerHeight;
+
+
+        camera.updateProjectionMatrix();
+
+
+        renderer.setSize(
+            window.innerWidth,
+            window.innerHeight
+        );
+
+    }
+);
+
+</script>
+
+</body>
+</html>
+```
