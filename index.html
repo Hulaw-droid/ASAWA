@@ -711,7 +711,7 @@ h2{
 
 <div id="mouseInfo">
 
-    🖱️ Drag/look around • WASD move • Shift sprint • H hide
+    🖱️ Drag/look around • WASD move • Shift sprint • H hide • C dash • X shield • SPACE jump
 
 </div>
 
@@ -810,12 +810,25 @@ h2{
 
         <p>
 
+            <b>SKILLS</b><br>
+
+            ⚡ C = Dash<br>
+            🛡️ X = Shield<br>
+            🦘 SPACE = Jump
+
+        </p>
+
+        <p>
+
             <b>PC</b><br>
 
             WASD / Arrow Keys = Move<br>
             Mouse = Look Around<br>
             SHIFT = Sprint<br>
-            H = Hide
+            H = Hide<br>
+            C = Dash<br>
+            X = Shield<br>
+            SPACE = Jump
 
         </p>
 
@@ -1492,8 +1505,6 @@ function createHidingSpot(x,z){
         new THREE.Group();
 
 
-    /* bush */
-
     const bush =
         new THREE.Mesh(
 
@@ -1522,8 +1533,6 @@ function createHidingSpot(x,z){
 
     group.add(bush);
 
-
-    /* small flowers */
 
     for(
         let i=0;
@@ -1735,11 +1744,6 @@ function createEnemy(x,z){
         2.2;
 
 
-    /*
-       Cone points forward along
-       the enemy's local -Z.
-    */
-
     vision.rotation.z=Math.PI;
 
     enemy.add(vision);
@@ -1948,6 +1952,60 @@ const keys={
 };
 
 
+/* =========================================================
+   SKILLS
+========================================================= */
+
+/*
+   DASH
+   Press C
+*/
+
+let dashCooldown=0;
+
+const DASH_COOLDOWN=2.5;
+
+const DASH_DISTANCE=8;
+
+
+/*
+   SHIELD
+   Press X
+
+   The shield lasts for a few seconds.
+*/
+
+let shieldActive=false;
+
+let shieldTimer=0;
+
+const SHIELD_DURATION=3;
+
+let shieldCooldown=0;
+
+const SHIELD_COOLDOWN=6;
+
+
+/*
+   JUMP
+   Press SPACE
+*/
+
+let verticalVelocity=0;
+
+let isJumping=false;
+
+const JUMP_FORCE=11;
+
+const GRAVITY=30;
+
+const PLAYER_GROUND_Y=0;
+
+
+/* =========================================================
+   KEYBOARD
+========================================================= */
+
 window.addEventListener(
     "keydown",
     event=>{
@@ -1994,6 +2052,53 @@ window.addEventListener(
             key==="h"
         )
             toggleHide();
+
+
+        /*
+           FIRST SKILL
+           C = DASH
+        */
+
+        if(
+            key==="c" &&
+            !event.repeat
+        ){
+
+            useDash();
+
+        }
+
+
+        /*
+           SECOND SKILL
+           X = SHIELD
+        */
+
+        if(
+            key==="x" &&
+            !event.repeat
+        ){
+
+            useShield();
+
+        }
+
+
+        /*
+           JUMP
+           SPACE
+        */
+
+        if(
+            event.code==="Space" &&
+            !event.repeat
+        ){
+
+            event.preventDefault();
+
+            jump();
+
+        }
 
     }
 );
@@ -2042,6 +2147,401 @@ window.addEventListener(
 
     }
 );
+
+
+/* =========================================================
+   DASH SKILL
+========================================================= */
+
+function useDash(){
+
+    if(!gameStarted)
+        return;
+
+    if(isHidden)
+        return;
+
+    if(dashCooldown>0){
+
+        setMessage(
+            "⚡ Dash is recharging..."
+        );
+
+        return;
+
+    }
+
+
+    /*
+       Dash in the direction
+       the player is currently moving.
+       If not moving, dash toward
+       the camera direction.
+    */
+
+    let forward=0;
+    let strafe=0;
+
+
+    if(keys.forward)
+        forward+=1;
+
+    if(keys.backward)
+        forward-=1;
+
+    if(keys.left)
+        strafe-=1;
+
+    if(keys.right)
+        strafe+=1;
+
+
+    if(
+        Math.abs(joystickY)>.05 ||
+        Math.abs(joystickX)>.05
+    ){
+
+        forward=-joystickY;
+        strafe=joystickX;
+
+    }
+
+
+    const forwardVector=
+        new THREE.Vector3(
+            Math.sin(cameraYaw),
+            0,
+            Math.cos(cameraYaw)
+        );
+
+
+    const rightVector=
+        new THREE.Vector3(
+            Math.cos(cameraYaw),
+            0,
+            -Math.sin(cameraYaw)
+        );
+
+
+    const direction=
+        new THREE.Vector3();
+
+
+    if(
+        forward!==0 ||
+        strafe!==0
+    ){
+
+        direction.addScaledVector(
+            forwardVector,
+            -forward
+        );
+
+        direction.addScaledVector(
+            rightVector,
+            strafe
+        );
+
+    }
+    else{
+
+        /*
+           No movement input:
+           dash toward camera-facing direction.
+        */
+
+        direction.set(
+            -Math.sin(cameraYaw),
+            0,
+            -Math.cos(cameraYaw)
+        );
+
+    }
+
+
+    direction.y=0;
+
+    if(direction.lengthSq()===0)
+        return;
+
+    direction.normalize();
+
+
+    /*
+       Test several small steps so
+       the dash cannot easily pass
+       through an obstacle.
+    */
+
+    const steps=12;
+
+    const stepDistance=
+        DASH_DISTANCE/steps;
+
+
+    let moved=0;
+
+
+    for(
+        let i=0;
+        i<steps;
+        i++
+    ){
+
+        const next=
+            player.position.clone();
+
+        next.x+=
+            direction.x*
+            stepDistance;
+
+        next.z+=
+            direction.z*
+            stepDistance;
+
+
+        next.x=
+            THREE.MathUtils.clamp(
+                next.x,
+                -37,
+                37
+            );
+
+        next.z=
+            THREE.MathUtils.clamp(
+                next.z,
+                -37,
+                37
+            );
+
+
+        if(
+            isBlocked(next)
+        )
+            break;
+
+
+        player.position.copy(
+            next
+        );
+
+        moved+=stepDistance;
+
+    }
+
+
+    dashCooldown=
+        DASH_COOLDOWN;
+
+
+    setMessage(
+        "⚡ DASH! " +
+        Math.round(moved) +
+        "m"
+    );
+
+}
+
+
+/* =========================================================
+   SHIELD SKILL
+========================================================= */
+
+function useShield(){
+
+    if(!gameStarted)
+        return;
+
+    if(isHidden)
+        return;
+
+
+    if(shieldActive){
+
+        setMessage(
+            "🛡️ Shield is already active!"
+        );
+
+        return;
+
+    }
+
+
+    if(shieldCooldown>0){
+
+        setMessage(
+            "🛡️ Shield is recharging..."
+        );
+
+        return;
+
+    }
+
+
+    shieldActive=true;
+
+    shieldTimer=
+        SHIELD_DURATION;
+
+
+    shieldCooldown=
+        SHIELD_COOLDOWN;
+
+
+    setMessage(
+        "🛡️ SHIELD ACTIVE! You're protected!"
+    );
+
+
+    /*
+       Shield immediately breaks
+       enemy vision.
+    */
+
+    enemies.forEach(
+        enemy=>{
+
+            if(
+                enemy.state==="CHASE"
+            ){
+
+                enemy.state=
+                    "SEARCH";
+
+                enemy.searchTimer=3;
+
+                enemy.lastKnown.copy(
+                    player.position
+                );
+
+            }
+
+        }
+    );
+
+}
+
+
+/* =========================================================
+   UPDATE SKILLS
+========================================================= */
+
+function updateSkills(delta){
+
+    if(dashCooldown>0){
+
+        dashCooldown=
+            Math.max(
+                0,
+                dashCooldown-delta
+            );
+
+    }
+
+
+    if(shieldCooldown>0){
+
+        shieldCooldown=
+            Math.max(
+                0,
+                shieldCooldown-delta
+            );
+
+    }
+
+
+    if(shieldActive){
+
+        shieldTimer-=delta;
+
+
+        if(shieldTimer<=0){
+
+            shieldActive=false;
+
+            setMessage(
+                "🛡️ Shield expired."
+            );
+
+        }
+
+    }
+
+}
+
+
+/* =========================================================
+   JUMP
+========================================================= */
+
+function jump(){
+
+    if(!gameStarted)
+        return;
+
+    if(isHidden)
+        return;
+
+
+    if(
+        !isJumping &&
+        player.position.y<=
+        PLAYER_GROUND_Y+.05
+    ){
+
+        verticalVelocity=
+            JUMP_FORCE;
+
+        isJumping=true;
+
+        setMessage(
+            "🦘 JUMP!"
+        );
+
+    }
+
+}
+
+
+/* =========================================================
+   UPDATE JUMP
+========================================================= */
+
+function updateJump(delta){
+
+    if(!gameStarted)
+        return;
+
+
+    if(!isJumping)
+        return;
+
+
+    verticalVelocity-=
+        GRAVITY*
+        delta;
+
+
+    player.position.y+=
+        verticalVelocity*
+        delta;
+
+
+    if(
+        player.position.y<=
+        PLAYER_GROUND_Y
+    ){
+
+        player.position.y=
+            PLAYER_GROUND_Y;
+
+        verticalVelocity=0;
+
+        isJumping=false;
+
+    }
+
+}
 
 
 /* =========================================================
@@ -2175,11 +2675,6 @@ renderer.domElement.addEventListener(
         const dy=
             y-lastTouchY;
 
-
-        /*
-           Ignore touches around
-           joystick/buttons.
-        */
 
         if(
             x<180 ||
@@ -3056,6 +3551,14 @@ function enemyCanSeePlayer(
     enemy
 ){
 
+    /*
+       SHIELD BLOCKS VISION
+    */
+
+    if(shieldActive)
+        return false;
+
+
     if(isHidden)
         return false;
 
@@ -3094,11 +3597,6 @@ function enemyCanSeePlayer(
         return false;
 
 
-    /*
-       Enemy's forward direction.
-       The enemy looks along -Z.
-    */
-
     const forward=
         new THREE.Vector3(
             0,
@@ -3126,17 +3624,9 @@ function enemyCanSeePlayer(
         );
 
 
-    /*
-       About 70 degree field of view.
-    */
-
     if(dot<.35)
         return false;
 
-
-    /*
-       Simple obstacle line-of-sight.
-    */
 
     const raycaster=
         new THREE.Raycaster();
@@ -3318,9 +3808,25 @@ function updateEnemies(
 
 
                 /*
-                   If player hides,
-                   enemy loses her.
+                   If shield becomes active,
+                   immediately make the enemy
+                   lose the chase.
                 */
+
+                if(shieldActive){
+
+                    enemy.state=
+                        "SEARCH";
+
+                    enemy.searchTimer=
+                        3;
+
+                    enemy.lastKnown.copy(
+                        player.position
+                    );
+
+                }
+
 
                 if(isHidden){
 
@@ -3350,10 +3856,15 @@ function updateEnemies(
                     );
 
 
+                /*
+                   Shield prevents catching.
+                */
+
                 if(
                     distance<2.2 &&
                     enemy.catchCooldown<=0 &&
-                    !isHidden
+                    !isHidden &&
+                    !shieldActive
                 ){
 
                     caughtByEnemy(
@@ -3362,11 +3873,6 @@ function updateEnemies(
 
                 }
 
-
-                /*
-                   If enemy gets too far
-                   and loses vision.
-                */
 
                 if(
                     !seesPlayer &&
@@ -3459,11 +3965,6 @@ function updateEnemies(
         !isHidden
     ){
 
-        /*
-           Don't force status to SAFE
-           if another enemy is searching.
-        */
-
         const searching=
             enemies.some(
                 e=>
@@ -3478,6 +3979,19 @@ function updateEnemies(
             );
 
         }
+
+    }
+
+
+    /*
+       Shield status has priority.
+    */
+
+    if(shieldActive){
+
+        updateStatus(
+            "SHIELDED"
+        );
 
     }
 
@@ -3562,6 +4076,14 @@ function caughtByEnemy(
     enemy
 ){
 
+    /*
+       Shield protection check
+    */
+
+    if(shieldActive)
+        return;
+
+
     enemy.catchCooldown=3;
 
 
@@ -3584,6 +4106,11 @@ function caughtByEnemy(
         0,
         30
     );
+
+
+    verticalVelocity=0;
+
+    isJumping=false;
 
 
     enemy.state=
@@ -3666,10 +4193,6 @@ function checkGoal(){
 ========================================================= */
 
 function updateCamera(){
-
-    /*
-       Camera stays behind player.
-    */
 
     const horizontal=
         Math.cos(
@@ -3901,7 +4424,17 @@ function animate(time){
     lastTime=time;
 
 
+    updateSkills(
+        delta
+    );
+
+
     updatePlayer(
+        delta
+    );
+
+
+    updateJump(
         delta
     );
 
@@ -3966,5 +4499,4 @@ window.addEventListener(
 </script>
 
 </body>
-</html> i want only where you you go your courser of the mouse it will susunod lang, and add a jump dont change anything
-
+</html>
