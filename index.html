@@ -3,6 +3,7 @@
 <head>
 
 <meta charset="UTF-8">
+
 <meta name="viewport"
       content="width=device-width, initial-scale=1.0,
                maximum-scale=1.0,user-scalable=no">
@@ -57,17 +58,11 @@ canvas{
     gap:12px;
     padding:12px 18px;
     border-radius:18px;
-
     color:white;
-
     background:rgba(45,10,30,.72);
-
     backdrop-filter:blur(12px);
-
     border:1px solid rgba(255,255,255,.2);
-
-    box-shadow:
-        0 10px 30px rgba(0,0,0,.25);
+    box-shadow:0 10px 30px rgba(0,0,0,.25);
 }
 
 .hudItem{
@@ -78,6 +73,98 @@ canvas{
 .hudItem span{
     color:#ff8fb5;
     font-weight:bold;
+}
+
+/* =========================================================
+   MINI MAP
+========================================================= */
+
+#miniMap{
+
+    position:fixed;
+
+    top:115px;
+    right:20px;
+
+    width:190px;
+    height:190px;
+
+    z-index:24;
+
+    border-radius:18px;
+
+    background:
+        rgba(15,5,18,.88);
+
+    border:
+        2px solid
+        rgba(255,143,183,.55);
+
+    box-shadow:
+        0 10px 35px
+        rgba(0,0,0,.45),
+        0 0 20px
+        rgba(255,60,130,.12);
+
+    backdrop-filter:blur(8px);
+
+    overflow:hidden;
+
+    pointer-events:none;
+}
+
+#mapCanvas{
+
+    width:100%;
+    height:100%;
+
+    display:block;
+
+}
+
+.mapTitle{
+
+    position:absolute;
+
+    top:7px;
+    left:50%;
+
+    transform:
+        translateX(-50%);
+
+    color:#ffdce8;
+
+    font-size:10px;
+
+    font-weight:bold;
+
+    letter-spacing:1px;
+
+    background:
+        rgba(30,5,25,.75);
+
+    padding:3px 8px;
+
+    border-radius:10px;
+}
+
+.mapLegend{
+
+    position:absolute;
+
+    bottom:6px;
+    left:7px;
+
+    display:flex;
+
+    gap:7px;
+
+    color:white;
+
+    font-size:8px;
+
+    opacity:.8;
+
 }
 
 /* =========================================================
@@ -120,8 +207,7 @@ canvas{
 
     opacity:0;
 
-    transition:
-        .25s;
+    transition:.25s;
 
     pointer-events:none;
 }
@@ -141,8 +227,7 @@ canvas{
     background:
         rgba(110,75,0,.9);
 
-    border-color:
-        #ffd34d;
+    border-color:#ffd34d;
 
     box-shadow:
         0 0 30px
@@ -488,7 +573,6 @@ h2{
     height:58px;
 
     left:50%;
-
     top:50%;
 
     transform:
@@ -659,6 +743,20 @@ h2{
         font-size:70px;
     }
 
+    #miniMap{
+
+        top:105px;
+        right:10px;
+
+        width:145px;
+        height:145px;
+
+    }
+
+    .mapLegend{
+        display:none;
+    }
+
 }
 
 </style>
@@ -669,7 +767,9 @@ h2{
 <div id="game"></div>
 
 
-<!-- HUD -->
+<!-- =========================================================
+     HUD
+========================================================= -->
 
 <div id="hud">
 
@@ -695,6 +795,31 @@ h2{
             <span id="status">SAFE</span>
         </div>
 
+    </div>
+
+</div>
+
+
+<!-- =========================================================
+     MINI MAP
+========================================================= -->
+
+<div id="miniMap">
+
+    <canvas id="mapCanvas"
+            width="380"
+            height="380">
+    </canvas>
+
+    <div class="mapTitle">
+        🗺️ MAP
+    </div>
+
+    <div class="mapLegend">
+        <span>● You</span>
+        <span>♥</span>
+        <span>● Enemy</span>
+        <span>✚ Heal</span>
     </div>
 
 </div>
@@ -771,7 +896,9 @@ h2{
 </div>
 
 
-<!-- START -->
+<!-- =========================================================
+     START
+========================================================= -->
 
 <div class="overlay" id="startScreen">
 
@@ -856,7 +983,9 @@ h2{
 </div>
 
 
-<!-- QUESTION -->
+<!-- =========================================================
+     QUESTION
+========================================================= -->
 
 <div
     class="overlay hidden"
@@ -899,7 +1028,9 @@ h2{
 </div>
 
 
-<!-- FINAL -->
+<!-- =========================================================
+     FINAL
+========================================================= -->
 
 <div
     class="overlay hidden"
@@ -1493,6 +1624,129 @@ heartPositions.forEach(
 
 
 /* =========================================================
+   HEAL PICKUP - RED CROSS
+========================================================= */
+
+let healCollected=false;
+
+const HEAL_AMOUNT=25;
+
+const healGroup =
+    new THREE.Group();
+
+
+/*
+   Vertical red bar
+*/
+
+const healMaterial =
+    new THREE.MeshStandardMaterial({
+
+        color:0xff174f,
+
+        emissive:0xff003c,
+
+        emissiveIntensity:1.8,
+
+        roughness:.25,
+
+        metalness:.15
+
+    });
+
+
+const healVertical =
+    new THREE.Mesh(
+
+        new THREE.BoxGeometry(
+            .55,
+            2.2,
+            .55
+        ),
+
+        healMaterial
+
+    );
+
+healVertical.position.y=2.2;
+
+
+/*
+   Horizontal red bar
+*/
+
+const healHorizontal =
+    new THREE.Mesh(
+
+        new THREE.BoxGeometry(
+            2.2,
+            .55,
+            .55
+        ),
+
+        healMaterial
+
+    );
+
+healHorizontal.position.y=2.2;
+
+
+healGroup.add(
+    healVertical,
+    healHorizontal
+);
+
+
+/*
+   White glowing base
+*/
+
+const healBase =
+    new THREE.Mesh(
+
+        new THREE.CylinderGeometry(
+            1.7,
+            1.7,
+            .12,
+            32
+        ),
+
+        new THREE.MeshBasicMaterial({
+
+            color:0xffffff,
+
+            transparent:true,
+
+            opacity:.35
+
+        })
+
+    );
+
+healBase.position.y=.08;
+
+healGroup.add(
+    healBase
+);
+
+
+/*
+   Heal location
+   placed in the map
+*/
+
+healGroup.position.set(
+    -28,
+    0,
+    -2
+);
+
+scene.add(
+    healGroup
+);
+
+
+/* =========================================================
    HIDING SPOTS
 ========================================================= */
 
@@ -1958,7 +2212,6 @@ const keys={
 
 /*
    DASH
-   Press C
 */
 
 let dashCooldown=0;
@@ -1970,9 +2223,6 @@ const DASH_DISTANCE=8;
 
 /*
    SHIELD
-   Press X
-
-   The shield lasts for a few seconds.
 */
 
 let shieldActive=false;
@@ -1988,7 +2238,6 @@ const SHIELD_COOLDOWN=6;
 
 /*
    JUMP
-   Press SPACE
 */
 
 let verticalVelocity=0;
@@ -2048,16 +2297,9 @@ window.addEventListener(
             keys.sprint=true;
 
 
-        if(
-            key==="h"
-        )
+        if(key==="h")
             toggleHide();
 
-
-        /*
-           FIRST SKILL
-           C = DASH
-        */
 
         if(
             key==="c" &&
@@ -2069,11 +2311,6 @@ window.addEventListener(
         }
 
 
-        /*
-           SECOND SKILL
-           X = SHIELD
-        */
-
         if(
             key==="x" &&
             !event.repeat
@@ -2083,11 +2320,6 @@ window.addEventListener(
 
         }
 
-
-        /*
-           JUMP
-           SPACE
-        */
 
         if(
             event.code==="Space" &&
@@ -2150,7 +2382,7 @@ window.addEventListener(
 
 
 /* =========================================================
-   DASH SKILL
+   DASH
 ========================================================= */
 
 function useDash(){
@@ -2171,13 +2403,6 @@ function useDash(){
 
     }
 
-
-    /*
-       Dash in the direction
-       the player is currently moving.
-       If not moving, dash toward
-       the camera direction.
-    */
 
     let forward=0;
     let strafe=0;
@@ -2245,11 +2470,6 @@ function useDash(){
     }
     else{
 
-        /*
-           No movement input:
-           dash toward camera-facing direction.
-        */
-
         direction.set(
             -Math.sin(cameraYaw),
             0,
@@ -2266,12 +2486,6 @@ function useDash(){
 
     direction.normalize();
 
-
-    /*
-       Test several small steps so
-       the dash cannot easily pass
-       through an obstacle.
-    */
 
     const steps=12;
 
@@ -2315,9 +2529,7 @@ function useDash(){
             );
 
 
-        if(
-            isBlocked(next)
-        )
+        if(isBlocked(next))
             break;
 
 
@@ -2335,8 +2547,8 @@ function useDash(){
 
 
     setMessage(
-        "⚡ DASH! " +
-        Math.round(moved) +
+        "⚡ DASH! "+
+        Math.round(moved)+
         "m"
     );
 
@@ -2344,7 +2556,7 @@ function useDash(){
 
 
 /* =========================================================
-   SHIELD SKILL
+   SHIELD
 ========================================================= */
 
 function useShield(){
@@ -2392,11 +2604,6 @@ function useShield(){
         "🛡️ SHIELD ACTIVE! You're protected!"
     );
 
-
-    /*
-       Shield immediately breaks
-       enemy vision.
-    */
 
     enemies.forEach(
         enemy=>{
@@ -2628,7 +2835,7 @@ window.addEventListener(
 
 
 /* =========================================================
-   MOBILE CAMERA TOUCH
+   MOBILE CAMERA
 ========================================================= */
 
 renderer.domElement.addEventListener(
@@ -2760,8 +2967,7 @@ function updateJoystick(
         y-centerY;
 
 
-    const max=
-        45;
+    const max=45;
 
 
     const distance=
@@ -2987,9 +3193,7 @@ function setMessage(text){
    STATUS
 ========================================================= */
 
-function updateStatus(
-    text
-){
+function updateStatus(text){
 
     const element=
         document.getElementById(
@@ -3014,6 +3218,12 @@ function updateStatus(
 
         element.style.color=
             "#c58cff";
+
+    }
+    else if(text==="SHIELDED"){
+
+        element.style.color=
+            "#70c8ff";
 
     }
     else{
@@ -3071,9 +3281,7 @@ function hideAlert(){
    COLLISION
 ========================================================= */
 
-function isBlocked(
-    position
-){
+function isBlocked(position){
 
     const radius=1.1;
 
@@ -3269,10 +3477,6 @@ function updatePlayer(delta){
     if(keys.right)
         strafe+=1;
 
-
-    /*
-       MOBILE JOYSTICK
-    */
 
     if(
         Math.abs(joystickY)>.05 ||
@@ -3544,16 +3748,137 @@ function updateHearts(time){
 
 
 /* =========================================================
+   HEAL PICKUP
+========================================================= */
+
+function updateHeal(time){
+
+    if(healCollected)
+        return;
+
+
+    /*
+       Floating animation
+    */
+
+    healGroup.position.y=
+        Math.sin(
+            time*.004
+        )*.25;
+
+
+    healGroup.rotation.y+=
+        .025;
+
+
+    healBase.scale.setScalar(
+        1+
+        Math.sin(
+            time*.005
+        )*.12
+    );
+
+
+    /*
+       Distance from player
+    */
+
+    const dx=
+        player.position.x-
+        healGroup.position.x;
+
+    const dz=
+        player.position.z-
+        healGroup.position.z;
+
+
+    const distance=
+        Math.sqrt(
+            dx*dx+
+            dz*dz
+        );
+
+
+    if(distance<2.5){
+
+        healCollected=true;
+
+
+        love=
+            Math.min(
+                100,
+                love+HEAL_AMOUNT
+            );
+
+
+        document
+            .getElementById(
+                "love"
+            )
+            .innerText=
+            Math.floor(love);
+
+
+        scene.remove(
+            healGroup
+        );
+
+
+        setMessage(
+            "✚ HEAL PICKED UP! +"+
+            HEAL_AMOUNT+
+            " ❤️"
+        );
+
+
+        /*
+           Small healing flash
+        */
+
+        const flash=
+            document.createElement(
+                "div"
+            );
+
+
+        flash.style.position="fixed";
+        flash.style.inset="0";
+        flash.style.zIndex="40";
+        flash.style.pointerEvents="none";
+        flash.style.background=
+            "rgba(255,60,120,.18)";
+        flash.style.transition=
+            "opacity .6s";
+
+        document.body.appendChild(
+            flash
+        );
+
+
+        requestAnimationFrame(
+            ()=>{
+                flash.style.opacity="0";
+            }
+        );
+
+
+        setTimeout(
+            ()=>{
+                flash.remove();
+            },
+            650
+        );
+
+    }
+
+}
+
+
+/* =========================================================
    ENEMY VISION
 ========================================================= */
 
-function enemyCanSeePlayer(
-    enemy
-){
-
-    /*
-       SHIELD BLOCKS VISION
-    */
+function enemyCanSeePlayer(enemy){
 
     if(shieldActive)
         return false;
@@ -3718,10 +4043,6 @@ function updateEnemies(
                 );
 
 
-            /*
-               PATROL
-            */
-
             if(
                 enemy.state==="PATROL"
             ){
@@ -3776,10 +4097,6 @@ function updateEnemies(
             }
 
 
-            /*
-               CHASE
-            */
-
             else if(
                 enemy.state==="CHASE"
             ){
@@ -3787,9 +4104,7 @@ function updateEnemies(
                 playerBeingChased=true;
 
 
-                if(
-                    seesPlayer
-                ){
+                if(seesPlayer){
 
                     enemy.lastKnown.copy(
                         player.position
@@ -3806,12 +4121,6 @@ function updateEnemies(
                     delta
                 );
 
-
-                /*
-                   If shield becomes active,
-                   immediately make the enemy
-                   lose the chase.
-                */
 
                 if(shieldActive){
 
@@ -3833,7 +4142,6 @@ function updateEnemies(
                     enemy.state=
                         "SEARCH";
 
-
                     enemy.searchTimer=
                         4;
 
@@ -3846,19 +4154,11 @@ function updateEnemies(
                 }
 
 
-                /*
-                   Catch
-                */
-
                 const distance=
                     object.position.distanceTo(
                         player.position
                     );
 
-
-                /*
-                   Shield prevents catching.
-                */
 
                 if(
                     distance<2.2 &&
@@ -3898,10 +4198,6 @@ function updateEnemies(
             }
 
 
-            /*
-               SEARCH
-            */
-
             else if(
                 enemy.state==="SEARCH"
             ){
@@ -3919,9 +4215,7 @@ function updateEnemies(
                 );
 
 
-                if(
-                    seesPlayer
-                ){
+                if(seesPlayer){
 
                     enemy.state=
                         "CHASE";
@@ -3982,10 +4276,6 @@ function updateEnemies(
 
     }
 
-
-    /*
-       Shield status has priority.
-    */
 
     if(shieldActive){
 
@@ -4075,10 +4365,6 @@ function moveEnemyToward(
 function caughtByEnemy(
     enemy
 ){
-
-    /*
-       Shield protection check
-    */
 
     if(shieldActive)
         return;
@@ -4279,6 +4565,596 @@ function updateGoal(time){
 
 
 /* =========================================================
+   MINI MAP SYSTEM
+========================================================= */
+
+const mapCanvas =
+    document.getElementById(
+        "mapCanvas"
+    );
+
+const mapCtx =
+    mapCanvas.getContext(
+        "2d"
+    );
+
+
+const MAP_SIZE=380;
+
+const MAP_WORLD_SIZE=80;
+
+
+/*
+   Convert world coordinates
+   to mini-map coordinates.
+*/
+
+function worldToMap(x,z){
+
+    const padding=15;
+
+    const usable=
+        MAP_SIZE-
+        padding*2;
+
+
+    const mapX=
+        padding+
+        (
+            (x+40)/
+            MAP_WORLD_SIZE
+        )*
+        usable;
+
+
+    const mapY=
+        padding+
+        (
+            (z+40)/
+            MAP_WORLD_SIZE
+        )*
+        usable;
+
+
+    return {
+        x:mapX,
+        y:mapY
+    };
+
+}
+
+
+/*
+   Draw circle marker
+*/
+
+function drawMapCircle(
+    x,
+    y,
+    radius,
+    fill,
+    stroke=null
+){
+
+    mapCtx.beginPath();
+
+    mapCtx.arc(
+        x,
+        y,
+        radius,
+        0,
+        Math.PI*2
+    );
+
+    mapCtx.fillStyle=fill;
+
+    mapCtx.fill();
+
+
+    if(stroke){
+
+        mapCtx.strokeStyle=stroke;
+
+        mapCtx.lineWidth=2;
+
+        mapCtx.stroke();
+
+    }
+
+}
+
+
+/*
+   Draw cross
+*/
+
+function drawMapCross(
+    x,
+    y
+){
+
+    mapCtx.save();
+
+    mapCtx.translate(
+        x,
+        y
+    );
+
+    mapCtx.fillStyle=
+        "#ff315f";
+
+    mapCtx.shadowColor=
+        "#ff315f";
+
+    mapCtx.shadowBlur=8;
+
+
+    mapCtx.fillRect(
+        -4,
+        -12,
+        8,
+        24
+    );
+
+
+    mapCtx.fillRect(
+        -12,
+        -4,
+        24,
+        8
+    );
+
+
+    mapCtx.restore();
+
+}
+
+
+/*
+   Main mini-map
+*/
+
+function updateMiniMap(){
+
+    mapCtx.clearRect(
+        0,
+        0,
+        MAP_SIZE,
+        MAP_SIZE
+    );
+
+
+    /*
+       Background
+    */
+
+    mapCtx.fillStyle=
+        "rgba(24,8,28,.96)";
+
+    mapCtx.fillRect(
+        0,
+        0,
+        MAP_SIZE,
+        MAP_SIZE
+    );
+
+
+    /*
+       World border
+    */
+
+    mapCtx.strokeStyle=
+        "rgba(255,143,183,.5)";
+
+    mapCtx.lineWidth=3;
+
+    mapCtx.strokeRect(
+        15,
+        15,
+        350,
+        350
+    );
+
+
+    /*
+       Grid
+    */
+
+    mapCtx.strokeStyle=
+        "rgba(255,100,160,.10)";
+
+    mapCtx.lineWidth=1;
+
+
+    for(
+        let i=1;
+        i<8;
+        i++
+    ){
+
+        const p=
+            15+
+            i*(
+                350/8
+            );
+
+
+        mapCtx.beginPath();
+
+        mapCtx.moveTo(
+            p,
+            15
+        );
+
+        mapCtx.lineTo(
+            p,
+            365
+        );
+
+        mapCtx.stroke();
+
+
+        mapCtx.beginPath();
+
+        mapCtx.moveTo(
+            15,
+            p
+        );
+
+        mapCtx.lineTo(
+            365,
+            p
+        );
+
+        mapCtx.stroke();
+
+    }
+
+
+    /*
+       Obstacles
+    */
+
+    obstacles.forEach(
+        obstacle=>{
+
+            const box=
+                new THREE.Box3()
+                    .setFromObject(
+                        obstacle
+                    );
+
+
+            const min=
+                worldToMap(
+                    box.min.x,
+                    box.min.z
+                );
+
+            const max=
+                worldToMap(
+                    box.max.x,
+                    box.max.z
+                );
+
+
+            mapCtx.fillStyle=
+                "rgba(130,55,95,.9)";
+
+
+            mapCtx.fillRect(
+                min.x,
+                min.y,
+                max.x-min.x,
+                max.y-min.y
+            );
+
+        }
+    );
+
+
+    /*
+       Hiding spots
+    */
+
+    hidingSpots.forEach(
+        spot=>{
+
+            const p=
+                worldToMap(
+                    spot.x,
+                    spot.z
+                );
+
+
+            drawMapCircle(
+                p.x,
+                p.y,
+                5,
+                "#38b878"
+            );
+
+        }
+    );
+
+
+    /*
+       Hearts
+    */
+
+    hearts.forEach(
+        heart=>{
+
+            if(
+                heart.collected
+            )
+                return;
+
+
+            const p=
+                worldToMap(
+                    heart.object.position.x,
+                    heart.object.position.z
+                );
+
+
+            mapCtx.fillStyle=
+                "#ff4f91";
+
+            mapCtx.font=
+                "bold 18px Arial";
+
+            mapCtx.textAlign=
+                "center";
+
+            mapCtx.textBaseline=
+                "middle";
+
+
+            mapCtx.fillText(
+                "♥",
+                p.x,
+                p.y
+            );
+
+        }
+    );
+
+
+    /*
+       Heal
+    */
+
+    if(!healCollected){
+
+        const p=
+            worldToMap(
+                healGroup.position.x,
+                healGroup.position.z
+            );
+
+
+        drawMapCross(
+            p.x,
+            p.y
+        );
+
+    }
+
+
+    /*
+       Goal
+    */
+
+    const goalMap=
+        worldToMap(
+            goal.position.x,
+            goal.position.z
+        );
+
+
+    drawMapCircle(
+        goalMap.x,
+        goalMap.y,
+        8,
+        "#ff9fc2",
+        "#ffffff"
+    );
+
+
+    mapCtx.fillStyle=
+        "#ffffff";
+
+    mapCtx.font=
+        "bold 12px Arial";
+
+    mapCtx.textAlign=
+        "center";
+
+    mapCtx.textBaseline=
+        "middle";
+
+
+    mapCtx.fillText(
+        "★",
+        goalMap.x,
+        goalMap.y
+    );
+
+
+    /*
+       Enemies
+    */
+
+    enemies.forEach(
+        enemy=>{
+
+            const p=
+                worldToMap(
+                    enemy.object.position.x,
+                    enemy.object.position.z
+                );
+
+
+            let enemyColor=
+                "#ff315f";
+
+
+            if(
+                enemy.state==="SEARCH"
+            ){
+
+                enemyColor=
+                    "#ffd34d";
+
+            }
+
+
+            drawMapCircle(
+                p.x,
+                p.y,
+                6,
+                enemyColor,
+                "#ffb0c5"
+            );
+
+
+            /*
+               Enemy direction
+            */
+
+            const direction=
+                new THREE.Vector3(
+                    0,
+                    0,
+                    -1
+                );
+
+            direction.applyQuaternion(
+                enemy.object.quaternion
+            );
+
+
+            const dirLength=11;
+
+
+            mapCtx.strokeStyle=
+                enemyColor;
+
+            mapCtx.globalAlpha=.35;
+
+            mapCtx.lineWidth=2;
+
+            mapCtx.beginPath();
+
+            mapCtx.moveTo(
+                p.x,
+                p.y
+            );
+
+            mapCtx.lineTo(
+                p.x+
+                direction.x*
+                dirLength,
+
+                p.y+
+                direction.z*
+                dirLength
+            );
+
+            mapCtx.stroke();
+
+            mapCtx.globalAlpha=1;
+
+        }
+    );
+
+
+    /*
+       Player
+    */
+
+    const playerMap=
+        worldToMap(
+            player.position.x,
+            player.position.z
+        );
+
+
+    /*
+       Player glow
+    */
+
+    mapCtx.beginPath();
+
+    mapCtx.arc(
+        playerMap.x,
+        playerMap.y,
+        12,
+        0,
+        Math.PI*2
+    );
+
+    mapCtx.fillStyle=
+        "rgba(255,120,180,.18)";
+
+    mapCtx.fill();
+
+
+    drawMapCircle(
+        playerMap.x,
+        playerMap.y,
+        6,
+        "#c58cff",
+        "#ffffff"
+    );
+
+
+    /*
+       Player direction
+    */
+
+    const playerDirection=
+        new THREE.Vector3(
+            0,
+            0,
+            -1
+        );
+
+
+    playerDirection.applyQuaternion(
+        player.quaternion
+    );
+
+
+    mapCtx.strokeStyle=
+        "#ffffff";
+
+    mapCtx.lineWidth=2;
+
+    mapCtx.beginPath();
+
+    mapCtx.moveTo(
+        playerMap.x,
+        playerMap.y
+    );
+
+    mapCtx.lineTo(
+        playerMap.x+
+        playerDirection.x*
+        12,
+
+        playerMap.y+
+        playerDirection.z*
+        12
+    );
+
+    mapCtx.stroke();
+
+}
+
+
+/* =========================================================
    FINISH
 ========================================================= */
 
@@ -4444,6 +5320,11 @@ function animate(time){
     );
 
 
+    updateHeal(
+        time
+    );
+
+
     updateEnemies(
         time,
         delta
@@ -4456,6 +5337,9 @@ function animate(time){
 
 
     updateCamera();
+
+
+    updateMiniMap();
 
 
     checkGoal();
