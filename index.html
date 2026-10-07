@@ -677,10 +677,6 @@ canvas{
 
 <body>
 
-<!-- =========================
-     HUD
-========================= -->
-
 <div id="hud">
 
     <div class="hudTitle">
@@ -709,35 +705,19 @@ canvas{
 
 </div>
 
-<!-- =========================
-     ALERT
-========================= -->
-
 <div id="alertBox">
     👁️ HE SEES YOU! RUN!
 </div>
 
-<!-- =========================
-     MESSAGE
-========================= -->
-
 <div id="message">
     Find all the hearts ❤️
 </div>
-
-<!-- =========================
-     STAMINA
-========================= -->
 
 <div id="staminaContainer">
 
     <div id="staminaBar"></div>
 
 </div>
-
-<!-- =========================
-     DESKTOP SKILLS
-========================= -->
 
 <div id="skillsPanel">
 
@@ -784,10 +764,6 @@ canvas{
     </div>
 
 </div>
-
-<!-- =========================
-     MOBILE CONTROLS
-========================= -->
 
 <div id="mobileControls">
 
@@ -841,10 +817,6 @@ canvas{
 
 </div>
 
-<!-- =========================
-     START SCREEN
-========================= -->
-
 <div id="startScreen">
 
     <div class="startBox">
@@ -890,10 +862,6 @@ canvas{
     </div>
 
 </div>
-
-<!-- =========================
-     FINAL SCREEN
-========================= -->
 
 <div id="finalScreen">
 
@@ -1008,8 +976,6 @@ const jumpPower = 12;
    SKILLS
 ========================================================= */
 
-/* INVINCIBLE */
-
 let invincible = false;
 
 let invincibleTimer = 0;
@@ -1019,8 +985,6 @@ let invincibleCooldown = 0;
 const invincibleDuration = 5;
 
 const invincibleCooldownTime = 12;
-
-/* DASH */
 
 let dashActive = false;
 
@@ -1093,23 +1057,29 @@ window.addEventListener(
    MOUSE CAMERA
 ========================================================= */
 
+/*
+   CAMERA ONLY.
+
+   No click.
+   No mouse drag.
+   No movement code is changed.
+
+   Move mouse LEFT  -> camera LEFT
+   Move mouse RIGHT -> camera RIGHT
+   Move mouse UP    -> camera UP
+   Move mouse DOWN  -> camera DOWN
+*/
+
 document.addEventListener(
     "mousemove",
     function(e){
 
-        if(!gameStarted || gameFinished){
+        if(
+            !gameStarted ||
+            gameFinished
+        ){
             return;
         }
-
-        /*
-            IMPORTANT:
-
-            movementX/movementY means the camera responds
-            to actual mouse movement.
-
-            Move mouse LEFT  -> camera LEFT
-            Move mouse RIGHT -> camera RIGHT
-        */
 
         targetCameraYaw -=
             e.movementX * mouseSensitivity;
@@ -1172,8 +1142,6 @@ function init(){
             110
         );
 
-    /* CAMERA */
-
     camera =
         new THREE.PerspectiveCamera(
             65,
@@ -1182,8 +1150,6 @@ function init(){
             0.1,
             300
         );
-
-    /* RENDERER */
 
     renderer =
         new THREE.WebGLRenderer({
@@ -1207,8 +1173,6 @@ function init(){
     document.body.appendChild(
         renderer.domElement
     );
-
-    /* LIGHT */
 
     const ambient =
         new THREE.HemisphereLight(
@@ -1235,8 +1199,6 @@ function init(){
 
     scene.add(moon);
 
-    /* GROUND */
-
     const groundGeometry =
         new THREE.PlaneGeometry(
             140,
@@ -1261,8 +1223,6 @@ function init(){
     ground.receiveShadow = true;
 
     scene.add(ground);
-
-    /* GRID */
 
     const grid =
         new THREE.GridHelper(
@@ -1308,8 +1268,6 @@ function createPlayer(){
     player =
         new THREE.Group();
 
-    /* BODY */
-
     const body =
         new THREE.Mesh(
             new THREE.CapsuleGeometry(
@@ -1330,8 +1288,6 @@ function createPlayer(){
 
     player.add(body);
 
-    /* HEAD */
-
     const head =
         new THREE.Mesh(
             new THREE.SphereGeometry(
@@ -1349,8 +1305,6 @@ function createPlayer(){
     head.castShadow = true;
 
     player.add(head);
-
-    /* HEART */
 
     const heartShape =
         new THREE.Shape();
@@ -1444,8 +1398,6 @@ function createPlayer(){
 
 function createEnvironment(){
 
-    /* TREES */
-
     for(let i=0;i<75;i++){
 
         let x =
@@ -1467,8 +1419,6 @@ function createEnvironment(){
         );
 
     }
-
-    /* OBSTACLES */
 
     const obstaclePositions = [
 
@@ -1495,8 +1445,6 @@ function createEnvironment(){
 
         }
     );
-
-    /* HIDING SPOTS */
 
     createHidingSpot(
         -20,
@@ -1813,8 +1761,6 @@ function createEnemy(
     const group =
         new THREE.Group();
 
-    /* BODY */
-
     const body =
         new THREE.Mesh(
             new THREE.CapsuleGeometry(
@@ -1833,8 +1779,6 @@ function createEnemy(
     body.castShadow = true;
 
     group.add(body);
-
-    /* HEAD */
 
     const head =
         new THREE.Mesh(
@@ -1959,13 +1903,10 @@ function createGoal(){
 
 /* =========================================================
    MOVEMENT
+   UNCHANGED
 ========================================================= */
 
 function updatePlayer(delta){
-
-    /* =====================
-       JUMP PHYSICS
-    ===================== */
 
     if(!isHidden){
 
@@ -1996,10 +1937,6 @@ function updatePlayer(delta){
         isGrounded = true;
 
     }
-
-    /* =====================
-       NORMAL MOVEMENT
-    ===================== */
 
     if(isHidden){
 
@@ -2039,8 +1976,6 @@ function updatePlayer(delta){
         strafe += 1;
     }
 
-    /* MOBILE */
-
     forward += mobileForward;
 
     strafe += mobileStrafe;
@@ -2058,8 +1993,6 @@ function updatePlayer(delta){
         strafe /= length;
 
     }
-
-    /* SPRINT */
 
     isSprinting =
         keys["ShiftLeft"] ||
@@ -2088,8 +2021,6 @@ function updatePlayer(delta){
             0,
             100
         );
-
-    /* DASH */
 
     if(dashActive){
 
@@ -2175,11 +2106,6 @@ function moveWithCollision(
     const next =
         player.position.clone()
             .add(movement);
-
-    /*
-       When jumping high enough, allow the player
-       to pass over obstacles.
-    */
 
     const airborne =
         player.position.y > 2.3;
@@ -2862,8 +2788,6 @@ function updateEnemies(
 
     }
 
-    /* STATUS */
-
     if(isHidden){
 
         updateStatus(
@@ -2966,8 +2890,6 @@ function enemyCanSeePlayer(
         return false;
 
     }
-
-    /* RAYCAST */
 
     const raycaster =
         new THREE.Raycaster();
@@ -3261,12 +3183,6 @@ function createConfetti(){
 ========================================================= */
 
 function updateCamera(){
-
-    /*
-        Smooth camera following.
-
-        The target changes directly from mouse movement.
-    */
 
     cameraYaw =
         THREE.MathUtils.lerp(
@@ -3682,6 +3598,7 @@ function setupMobileControls(){
 
 /* =========================================================
    MOBILE CAMERA
+   UNCHANGED
 ========================================================= */
 
 let touchLookActive = false;
@@ -3702,11 +3619,6 @@ document.addEventListener(
 
         const touch =
             e.touches[0];
-
-        /*
-            Do not use the camera when touching
-            buttons/joystick areas.
-        */
 
         if(
             touch.clientX < 180 &&
