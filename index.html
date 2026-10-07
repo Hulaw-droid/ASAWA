@@ -114,12 +114,9 @@ canvas{
 }
 
 #mapCanvas{
-
     width:100%;
     height:100%;
-
     display:block;
-
 }
 
 .mapTitle{
@@ -164,7 +161,6 @@ canvas{
     font-size:8px;
 
     opacity:.8;
-
 }
 
 /* =========================================================
@@ -232,7 +228,6 @@ canvas{
     box-shadow:
         0 0 30px
         rgba(255,210,60,.4);
-
 }
 
 /* =========================================================
@@ -381,7 +376,6 @@ canvas{
     box-shadow:
         0 30px 100px
         rgba(0,0,0,.55);
-
 }
 
 .logoHeart{
@@ -403,7 +397,6 @@ canvas{
     50%{
         transform:scale(1.15);
     }
-
 }
 
 h1{
@@ -413,7 +406,6 @@ h1{
     color:#ff91b7;
 
     margin-bottom:12px;
-
 }
 
 h2{
@@ -421,7 +413,6 @@ h2{
     color:#ff91b7;
 
     margin-bottom:15px;
-
 }
 
 .panel p{
@@ -431,7 +422,6 @@ h2{
     color:#ffdce8;
 
     margin-bottom:18px;
-
 }
 
 .startButton{
@@ -462,7 +452,6 @@ h2{
         rgba(255,60,130,.3);
 
     transition:.2s;
-
 }
 
 .startButton:hover{
@@ -470,13 +459,10 @@ h2{
     transform:
         translateY(-3px)
         scale(1.03);
-
 }
 
 .hidden{
-
     display:none!important;
-
 }
 
 /* =========================================================
@@ -499,7 +485,6 @@ h2{
     border-radius:20px;
 
     margin:20px 0;
-
 }
 
 .letter p{
@@ -507,7 +492,6 @@ h2{
     color:#ffe7ef;
 
     margin-bottom:13px;
-
 }
 
 .signature{
@@ -519,11 +503,10 @@ h2{
     font-weight:bold;
 
     font-size:20px;
-
 }
 
 /* =========================================================
-   MOBILE JOYSTICK
+   MOBILE
 ========================================================= */
 
 #mobileControls{
@@ -561,7 +544,6 @@ h2{
         rgba(255,255,255,.2);
 
     pointer-events:auto;
-
 }
 
 #joystickStick{
@@ -590,7 +572,6 @@ h2{
     box-shadow:
         0 5px 20px
         rgba(255,50,130,.4);
-
 }
 
 .mobileButton{
@@ -618,7 +599,6 @@ h2{
     box-shadow:
         0 8px 20px
         rgba(0,0,0,.3);
-
 }
 
 #sprintButton{
@@ -629,7 +609,6 @@ h2{
 
     background:
         rgba(255,90,130,.8);
-
 }
 
 #hideButton{
@@ -640,7 +619,6 @@ h2{
 
     background:
         rgba(90,60,120,.85);
-
 }
 
 #mobileHint{
@@ -656,7 +634,6 @@ h2{
     font-size:11px;
 
     opacity:.7;
-
 }
 
 /* =========================================================
@@ -691,7 +668,6 @@ h2{
     font-size:13px;
 
     pointer-events:none;
-
 }
 
 /* =========================================================
@@ -806,9 +782,10 @@ h2{
 
 <div id="miniMap">
 
-    <canvas id="mapCanvas"
-            width="380"
-            height="380">
+    <canvas
+        id="mapCanvas"
+        width="380"
+        height="380">
     </canvas>
 
     <div class="mapTitle">
@@ -897,10 +874,12 @@ h2{
 
 
 <!-- =========================================================
-     START
+     START SCREEN
 ========================================================= -->
 
-<div class="overlay" id="startScreen">
+<div
+    class="overlay"
+    id="startScreen">
 
     <div class="panel">
 
@@ -1129,10 +1108,7 @@ h2{
 </div>
 
 
-<!-- THREE -->
-
 <script src="https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.min.js"></script>
-
 
 <script>
 
@@ -1624,36 +1600,41 @@ heartPositions.forEach(
 
 
 /* =========================================================
-   HEAL PICKUP - RED CROSS
+   GREEN HEAL CROSS
 ========================================================= */
 
 let healCollected=false;
 
 const HEAL_AMOUNT=25;
 
+
 const healGroup =
     new THREE.Group();
 
 
 /*
-   Vertical red bar
+   GREEN MATERIAL
 */
 
 const healMaterial =
     new THREE.MeshStandardMaterial({
 
-        color:0xff174f,
+        color:0x25e06f,
 
-        emissive:0xff003c,
+        emissive:0x00a83f,
 
-        emissiveIntensity:1.8,
+        emissiveIntensity:2.2,
 
-        roughness:.25,
+        roughness:.2,
 
         metalness:.15
 
     });
 
+
+/*
+   Vertical part of cross
+*/
 
 const healVertical =
     new THREE.Mesh(
@@ -1672,7 +1653,7 @@ healVertical.position.y=2.2;
 
 
 /*
-   Horizontal red bar
+   Horizontal part
 */
 
 const healHorizontal =
@@ -1713,11 +1694,11 @@ const healBase =
 
         new THREE.MeshBasicMaterial({
 
-            color:0xffffff,
+            color:0x7dffae,
 
             transparent:true,
 
-            opacity:.35
+            opacity:.4
 
         })
 
@@ -1731,8 +1712,7 @@ healGroup.add(
 
 
 /*
-   Heal location
-   placed in the map
+   Heal position
 */
 
 healGroup.position.set(
@@ -1952,10 +1932,6 @@ function createEnemy(x,z){
 
     scene.add(enemy);
 
-
-    /*
-       VISION CONE
-    */
 
     const visionGeometry =
         new THREE.ConeGeometry(
@@ -2192,6 +2168,261 @@ createObstacle(
 
 
 /* =========================================================
+   BLUE SHIELD
+========================================================= */
+
+let shieldMesh=null;
+
+
+/*
+   Create visible blue shield
+*/
+
+function createShield(){
+
+    if(shieldMesh)
+        return;
+
+
+    /*
+       Main transparent sphere
+    */
+
+    const shieldGeometry =
+        new THREE.SphereGeometry(
+            2.9,
+            32,
+            32
+        );
+
+
+    const shieldMaterial =
+        new THREE.MeshPhysicalMaterial({
+
+            color:0x168cff,
+
+            emissive:0x006eff,
+
+            emissiveIntensity:2.5,
+
+            transparent:true,
+
+            opacity:.22,
+
+            roughness:.1,
+
+            metalness:.15,
+
+            transmission:.15,
+
+            side:THREE.DoubleSide
+
+        });
+
+
+    shieldMesh =
+        new THREE.Mesh(
+            shieldGeometry,
+            shieldMaterial
+        );
+
+
+    shieldMesh.position.y=1.5;
+
+
+    /*
+       Outer blue ring
+    */
+
+    const shieldRing =
+        new THREE.Mesh(
+
+            new THREE.TorusGeometry(
+                2.75,
+                .09,
+                12,
+                64
+            ),
+
+            new THREE.MeshBasicMaterial({
+
+                color:0x35b9ff,
+
+                transparent:true,
+
+                opacity:.95
+
+            })
+
+        );
+
+
+    shieldRing.rotation.x=
+        Math.PI/2;
+
+
+    shieldRing.position.y=
+        -1.2;
+
+
+    shieldMesh.add(
+        shieldRing
+    );
+
+
+    /*
+       Second ring
+    */
+
+    const shieldRing2 =
+        new THREE.Mesh(
+
+            new THREE.TorusGeometry(
+                2.55,
+                .055,
+                12,
+                64
+            ),
+
+            new THREE.MeshBasicMaterial({
+
+                color:0x8cddff,
+
+                transparent:true,
+
+                opacity:.8
+
+            })
+
+        );
+
+
+    shieldRing2.rotation.y=
+        Math.PI/2;
+
+
+    shieldMesh.add(
+        shieldRing2
+    );
+
+
+    player.add(
+        shieldMesh
+    );
+
+}
+
+
+/*
+   Remove shield
+*/
+
+function removeShield(){
+
+    if(!shieldMesh)
+        return;
+
+
+    player.remove(
+        shieldMesh
+    );
+
+
+    shieldMesh.traverse(
+        child=>{
+
+            if(child.geometry)
+                child.geometry.dispose();
+
+            if(child.material){
+
+                if(
+                    Array.isArray(
+                        child.material
+                    )
+                ){
+
+                    child.material.forEach(
+                        m=>m.dispose()
+                    );
+
+                }
+                else{
+
+                    child.material.dispose();
+
+                }
+
+            }
+
+        }
+    );
+
+
+    shieldMesh=null;
+
+}
+
+
+/*
+   Animate shield
+*/
+
+function updateShieldVisual(time){
+
+    if(
+        shieldActive &&
+        shieldMesh
+    ){
+
+        shieldMesh.visible=true;
+
+
+        shieldMesh.rotation.y=
+            time*.0015;
+
+
+        shieldMesh.rotation.z=
+            Math.sin(
+                time*.002
+            )*.08;
+
+
+        const pulse=
+            1+
+            Math.sin(
+                time*.006
+            )*.06;
+
+
+        shieldMesh.scale.setScalar(
+            pulse
+        );
+
+
+        /*
+           Make blue shield even brighter
+        */
+
+        const mainMaterial=
+            shieldMesh.material;
+
+
+        mainMaterial.opacity=
+            .20+
+            (
+                Math.sin(
+                    time*.006
+                )+
+                1
+            )*.045;
+
+    }
+
+}
+
+
+/* =========================================================
    CONTROLS
 ========================================================= */
 
@@ -2210,20 +2441,12 @@ const keys={
    SKILLS
 ========================================================= */
 
-/*
-   DASH
-*/
-
 let dashCooldown=0;
 
 const DASH_COOLDOWN=2.5;
 
 const DASH_DISTANCE=8;
 
-
-/*
-   SHIELD
-*/
 
 let shieldActive=false;
 
@@ -2235,10 +2458,6 @@ let shieldCooldown=0;
 
 const SHIELD_COOLDOWN=6;
 
-
-/*
-   JUMP
-*/
 
 let verticalVelocity=0;
 
@@ -2600,8 +2819,15 @@ function useShield(){
         SHIELD_COOLDOWN;
 
 
+    /*
+       CREATE BLUE SHIELD
+    */
+
+    createShield();
+
+
     setMessage(
-        "🛡️ SHIELD ACTIVE! You're protected!"
+        "🛡️ BLUE SHIELD ACTIVE! You're protected!"
     );
 
 
@@ -2666,8 +2892,11 @@ function updateSkills(delta){
 
             shieldActive=false;
 
+            removeShield();
+
+
             setMessage(
-                "🛡️ Shield expired."
+                "🛡️ Blue shield expired."
             );
 
         }
@@ -2709,10 +2938,6 @@ function jump(){
 
 }
 
-
-/* =========================================================
-   UPDATE JUMP
-========================================================= */
 
 function updateJump(delta){
 
@@ -3202,6 +3427,7 @@ function updateStatus(text){
 
     element.innerText=text;
 
+
     if(text==="CHASE"){
 
         element.style.color=
@@ -3223,7 +3449,7 @@ function updateStatus(text){
     else if(text==="SHIELDED"){
 
         element.style.color=
-            "#70c8ff";
+            "#35b9ff";
 
     }
     else{
@@ -3497,7 +3723,10 @@ function updatePlayer(delta){
         strafe===0
     ){
 
-        updateStamina(delta,false);
+        updateStamina(
+            delta,
+            false
+        );
 
         return;
 
@@ -3748,7 +3977,7 @@ function updateHearts(time){
 
 
 /* =========================================================
-   HEAL PICKUP
+   HEAL
 ========================================================= */
 
 function updateHeal(time){
@@ -3756,10 +3985,6 @@ function updateHeal(time){
     if(healCollected)
         return;
 
-
-    /*
-       Floating animation
-    */
 
     healGroup.position.y=
         Math.sin(
@@ -3778,10 +4003,6 @@ function updateHeal(time){
         )*.12
     );
 
-
-    /*
-       Distance from player
-    */
 
     const dx=
         player.position.x-
@@ -3831,10 +4052,6 @@ function updateHeal(time){
         );
 
 
-        /*
-           Small healing flash
-        */
-
         const flash=
             document.createElement(
                 "div"
@@ -3846,9 +4063,10 @@ function updateHeal(time){
         flash.style.zIndex="40";
         flash.style.pointerEvents="none";
         flash.style.background=
-            "rgba(255,60,120,.18)";
+            "rgba(40,255,120,.16)";
         flash.style.transition=
             "opacity .6s";
+
 
         document.body.appendChild(
             flash
@@ -4565,7 +4783,7 @@ function updateGoal(time){
 
 
 /* =========================================================
-   MINI MAP SYSTEM
+   MINI MAP
 ========================================================= */
 
 const mapCanvas =
@@ -4583,11 +4801,6 @@ const MAP_SIZE=380;
 
 const MAP_WORLD_SIZE=80;
 
-
-/*
-   Convert world coordinates
-   to mini-map coordinates.
-*/
 
 function worldToMap(x,z){
 
@@ -4623,10 +4836,6 @@ function worldToMap(x,z){
 
 }
 
-
-/*
-   Draw circle marker
-*/
 
 function drawMapCircle(
     x,
@@ -4664,10 +4873,6 @@ function drawMapCircle(
 }
 
 
-/*
-   Draw cross
-*/
-
 function drawMapCross(
     x,
     y
@@ -4681,12 +4886,12 @@ function drawMapCross(
     );
 
     mapCtx.fillStyle=
-        "#ff315f";
+        "#25e06f";
 
     mapCtx.shadowColor=
-        "#ff315f";
+        "#00ff68";
 
-    mapCtx.shadowBlur=8;
+    mapCtx.shadowBlur=12;
 
 
     mapCtx.fillRect(
@@ -4710,10 +4915,6 @@ function drawMapCross(
 }
 
 
-/*
-   Main mini-map
-*/
-
 function updateMiniMap(){
 
     mapCtx.clearRect(
@@ -4723,10 +4924,6 @@ function updateMiniMap(){
         MAP_SIZE
     );
 
-
-    /*
-       Background
-    */
 
     mapCtx.fillStyle=
         "rgba(24,8,28,.96)";
@@ -4738,10 +4935,6 @@ function updateMiniMap(){
         MAP_SIZE
     );
 
-
-    /*
-       World border
-    */
 
     mapCtx.strokeStyle=
         "rgba(255,143,183,.5)";
@@ -4755,10 +4948,6 @@ function updateMiniMap(){
         350
     );
 
-
-    /*
-       Grid
-    */
 
     mapCtx.strokeStyle=
         "rgba(255,100,160,.10)";
@@ -4922,7 +5111,7 @@ function updateMiniMap(){
 
 
     /*
-       Heal
+       GREEN HEAL
     */
 
     if(!healCollected){
@@ -5019,16 +5208,13 @@ function updateMiniMap(){
             );
 
 
-            /*
-               Enemy direction
-            */
-
             const direction=
                 new THREE.Vector3(
                     0,
                     0,
                     -1
                 );
+
 
             direction.applyQuaternion(
                 enemy.object.quaternion
@@ -5081,38 +5267,33 @@ function updateMiniMap(){
         );
 
 
-    /*
-       Player glow
-    */
+    if(shieldActive){
 
-    mapCtx.beginPath();
+        /*
+           BLUE MAP SHIELD
+        */
 
-    mapCtx.arc(
-        playerMap.x,
-        playerMap.y,
-        12,
-        0,
-        Math.PI*2
-    );
+        drawMapCircle(
+            playerMap.x,
+            playerMap.y,
+            13,
+            "rgba(30,150,255,.22)",
+            "#35b9ff"
+        );
 
-    mapCtx.fillStyle=
-        "rgba(255,120,180,.18)";
-
-    mapCtx.fill();
+    }
 
 
     drawMapCircle(
         playerMap.x,
         playerMap.y,
         6,
-        "#c58cff",
+        shieldActive
+            ? "#35b9ff"
+            : "#c58cff",
         "#ffffff"
     );
 
-
-    /*
-       Player direction
-    */
 
     const playerDirection=
         new THREE.Vector3(
@@ -5328,6 +5509,11 @@ function animate(time){
     updateEnemies(
         time,
         delta
+    );
+
+
+    updateShieldVisual(
+        time
     );
 
 
