@@ -3,7 +3,6 @@
 <head>
 
 <meta charset="UTF-8">
-
 <meta name="viewport"
       content="width=device-width, initial-scale=1.0,
                maximum-scale=1.0,user-scalable=no">
@@ -23,374 +22,84 @@ body{
     width:100%;
     height:100%;
     overflow:hidden;
-    background:#000;
     font-family:Arial,Helvetica,sans-serif;
-    user-select:none;
+    background:#120817;
     touch-action:none;
+}
+
+#game{
+    position:fixed;
+    inset:0;
 }
 
 canvas{
     display:block;
 }
 
-/* =========================
+/* =========================================================
    HUD
-========================= */
+========================================================= */
 
 #hud{
     position:fixed;
-    top:15px;
-    left:15px;
+    top:18px;
+    left:50%;
+    transform:translateX(-50%);
+    width:min(950px,92%);
     z-index:20;
-
-    min-width:210px;
-
-    padding:14px 16px;
-
-    border-radius:15px;
-
-    color:white;
-
-    background:rgba(0,0,0,.65);
-
-    border:1px solid rgba(255,255,255,.18);
-
-    backdrop-filter:blur(8px);
-
-    box-shadow:0 5px 25px rgba(0,0,0,.35);
-
     pointer-events:none;
 }
 
-.hudTitle{
-    font-size:18px;
-    font-weight:bold;
-    margin-bottom:8px;
-}
-
-.hudRow{
+.hudBox{
     display:flex;
     justify-content:space-between;
-    gap:20px;
-
-    font-size:13px;
-    margin-top:5px;
-}
-
-#loveValue{
-    color:#ff5b88;
-    font-weight:bold;
-}
-
-#heartValue{
-    color:#ff4d6d;
-    font-weight:bold;
-}
-
-#levelValue{
-    color:#ffd166;
-    font-weight:bold;
-}
-
-#statusValue{
-    color:#71e6a5;
-    font-weight:bold;
-}
-
-/* =========================
-   ALERT
-========================= */
-
-#alertBox{
-    position:fixed;
-
-    top:20px;
-    left:50%;
-
-    transform:translateX(-50%);
-
-    z-index:30;
-
-    padding:13px 24px;
-
-    border-radius:14px;
-
-    background:rgba(120,0,0,.92);
+    align-items:center;
+    gap:12px;
+    padding:12px 18px;
+    border-radius:18px;
 
     color:white;
 
-    font-weight:bold;
+    background:rgba(45,10,30,.72);
 
-    font-size:18px;
-
-    box-shadow:
-        0 0 25px rgba(255,0,0,.65);
-
-    display:none;
-
-    animation:alertPulse .7s infinite alternate;
-
-    pointer-events:none;
-}
-
-#alertBox.searching{
-    background:rgba(125,75,0,.92);
-
-    box-shadow:
-        0 0 25px rgba(255,175,0,.55);
-}
-
-@keyframes alertPulse{
-
-    from{
-        transform:translateX(-50%) scale(1);
-    }
-
-    to{
-        transform:translateX(-50%) scale(1.05);
-    }
-
-}
-
-/* =========================
-   MESSAGE
-========================= */
-
-#message{
-    position:fixed;
-
-    left:50%;
-    bottom:32px;
-
-    transform:translateX(-50%);
-
-    z-index:20;
-
-    max-width:80%;
-
-    padding:10px 18px;
-
-    color:white;
-
-    background:rgba(0,0,0,.65);
-
-    border-radius:12px;
-
-    font-size:15px;
-
-    text-align:center;
-
-    pointer-events:none;
-}
-
-/* =========================
-   STAMINA
-========================= */
-
-#staminaContainer{
-
-    position:fixed;
-
-    left:50%;
-    bottom:10px;
-
-    transform:translateX(-50%);
-
-    width:260px;
-    height:9px;
-
-    background:rgba(0,0,0,.55);
-
-    border-radius:20px;
-
-    overflow:hidden;
-
-    z-index:20;
+    backdrop-filter:blur(12px);
 
     border:1px solid rgba(255,255,255,.2);
+
+    box-shadow:
+        0 10px 30px rgba(0,0,0,.25);
 }
 
-#staminaBar{
-
-    width:100%;
-    height:100%;
-
-    background:#55efc4;
-
-    transition:width .1s linear;
+.hudItem{
+    white-space:nowrap;
+    font-size:15px;
 }
 
-/* =========================
-   SKILLS
-========================= */
+.hudItem span{
+    color:#ff8fb5;
+    font-weight:bold;
+}
 
-#skillsPanel{
+/* =========================================================
+   ALERT
+========================================================= */
+
+#alertBox{
 
     position:fixed;
 
-    right:18px;
-    bottom:18px;
+    top:105px;
+    left:50%;
+
+    transform:
+        translateX(-50%)
+        scale(.8);
 
     z-index:25;
 
-    display:flex;
-
-    gap:10px;
-}
-
-.skill{
-
-    width:82px;
-    height:70px;
-
-    border-radius:15px;
-
-    border:1px solid rgba(255,255,255,.25);
-
-    background:rgba(0,0,0,.72);
-
-    color:white;
-
-    display:flex;
-
-    flex-direction:column;
-
-    align-items:center;
-
-    justify-content:center;
-
-    cursor:pointer;
-
-    box-shadow:0 5px 20px rgba(0,0,0,.3);
-
-    transition:.15s;
-}
-
-.skill:hover{
-    transform:translateY(-3px);
-    background:rgba(30,30,30,.9);
-}
-
-.skill:active{
-    transform:scale(.94);
-}
-
-.skillIcon{
-    font-size:25px;
-}
-
-.skillName{
-    font-size:11px;
-    font-weight:bold;
-    margin-top:2px;
-}
-
-.skillCooldown{
-    font-size:10px;
-    color:#aaa;
-    margin-top:2px;
-}
-
-.skill.ready .skillCooldown{
-    color:#72f2a7;
-}
-
-/* =========================
-   START SCREEN
-========================= */
-
-#startScreen{
-
-    position:fixed;
-
-    inset:0;
-
-    z-index:100;
-
-    display:flex;
-
-    align-items:center;
-    justify-content:center;
-
-    background:
-        radial-gradient(
-            circle at center,
-            rgba(255,80,140,.16),
-            rgba(0,0,0,.95)
-        );
-
-    color:white;
-
-    text-align:center;
-}
-
-.startBox{
-
-    width:min(650px,90%);
-
-    padding:35px;
-
-    border-radius:25px;
-
-    background:rgba(0,0,0,.72);
-
-    border:1px solid rgba(255,255,255,.18);
-
-    box-shadow:
-        0 0 60px rgba(255,50,120,.2);
-}
-
-.startBox h1{
-
-    font-size:48px;
-
-    color:#ff5c91;
-
-    margin-bottom:10px;
-
-    text-shadow:
-        0 0 20px rgba(255,70,130,.5);
-}
-
-.startBox p{
-
-    color:#ddd;
-
-    line-height:1.7;
-
-    margin:10px 0;
-}
-
-.startInstructions{
-
-    margin:22px 0;
-
-    padding:16px;
-
-    border-radius:15px;
-
-    background:rgba(255,255,255,.06);
-
-    text-align:left;
-
-    font-size:14px;
-
-    line-height:1.8;
-}
-
-#startButton{
-
-    border:none;
-
-    padding:15px 35px;
+    padding:12px 25px;
 
     border-radius:30px;
-
-    background:linear-gradient(
-        135deg,
-        #ff4d88,
-        #ff1744
-    );
 
     color:white;
 
@@ -398,90 +107,209 @@ canvas{
 
     font-weight:bold;
 
-    cursor:pointer;
+    background:
+        rgba(120,0,30,.9);
+
+    border:
+        2px solid
+        rgba(255,80,120,.8);
 
     box-shadow:
-        0 8px 25px rgba(255,30,80,.35);
+        0 0 30px
+        rgba(255,0,80,.5);
+
+    opacity:0;
+
+    transition:
+        .25s;
+
+    pointer-events:none;
+}
+
+#alertBox.show{
+
+    opacity:1;
+
+    transform:
+        translateX(-50%)
+        scale(1);
+
+}
+
+#alertBox.searching{
+
+    background:
+        rgba(110,75,0,.9);
+
+    border-color:
+        #ffd34d;
+
+    box-shadow:
+        0 0 30px
+        rgba(255,210,60,.4);
+
+}
+
+/* =========================================================
+   MESSAGE
+========================================================= */
+
+#message{
+
+    position:fixed;
+
+    left:50%;
+    bottom:30px;
+
+    transform:translateX(-50%);
+
+    z-index:20;
+
+    color:white;
+
+    background:
+        rgba(45,10,30,.8);
+
+    backdrop-filter:blur(10px);
+
+    padding:12px 22px;
+
+    border-radius:30px;
+
+    border:
+        1px solid
+        rgba(255,255,255,.2);
+
+    font-size:15px;
+
+    text-align:center;
+
+    pointer-events:none;
 
     transition:.2s;
 }
 
-#startButton:hover{
+/* =========================================================
+   STAMINA
+========================================================= */
 
-    transform:translateY(-3px) scale(1.03);
+#staminaContainer{
+
+    position:fixed;
+
+    left:50%;
+    bottom:75px;
+
+    transform:translateX(-50%);
+
+    width:230px;
+
+    height:12px;
+
+    border-radius:20px;
+
+    background:
+        rgba(0,0,0,.5);
+
+    border:
+        1px solid
+        rgba(255,255,255,.2);
+
+    overflow:hidden;
+
+    z-index:20;
+
+    pointer-events:none;
 }
 
-/* =========================
-   FINAL SCREEN
-========================= */
+#stamina{
 
-#finalScreen{
+    height:100%;
+
+    width:100%;
+
+    background:
+        linear-gradient(
+            90deg,
+            #ff4f91,
+            #ff9ac0
+        );
+
+    transition:.1s;
+}
+
+/* =========================================================
+   OVERLAYS
+========================================================= */
+
+.overlay{
 
     position:fixed;
 
     inset:0;
 
-    z-index:200;
+    z-index:50;
 
-    display:none;
+    display:flex;
+
+    justify-content:center;
 
     align-items:center;
-    justify-content:center;
 
     background:
         radial-gradient(
             circle at center,
-            rgba(255,40,100,.3),
-            rgba(0,0,0,.96)
+            rgba(255,110,160,.18),
+            rgba(10,4,15,.96)
         );
+
+    padding:20px;
+}
+
+.panel{
+
+    width:min(650px,94%);
+
+    max-height:90vh;
+
+    overflow:auto;
+
+    text-align:center;
+
+    padding:40px;
+
+    border-radius:30px;
 
     color:white;
 
-    text-align:center;
-}
+    background:
+        linear-gradient(
+            145deg,
+            rgba(80,15,50,.94),
+            rgba(30,8,25,.96)
+        );
 
-.finalBox{
-
-    width:min(650px,90%);
-
-    padding:35px;
-
-    border-radius:25px;
-
-    background:rgba(0,0,0,.78);
-
-    border:1px solid rgba(255,255,255,.2);
+    border:
+        1px solid
+        rgba(255,160,190,.3);
 
     box-shadow:
-        0 0 70px rgba(255,40,100,.25);
+        0 30px 100px
+        rgba(0,0,0,.55);
+
 }
 
-.finalBox h1{
+.logoHeart{
 
-    font-size:40px;
+    font-size:90px;
 
-    color:#ff5c91;
+    animation:
+        heartbeat 1.3s infinite;
 
-    margin-bottom:15px;
+    margin-bottom:10px;
 }
 
-.finalBox p{
-
-    color:#eee;
-
-    line-height:1.8;
-
-    margin:10px 0;
-}
-
-.finalHeart{
-
-    font-size:70px;
-
-    animation:heartBeat 1s infinite;
-}
-
-@keyframes heartBeat{
+@keyframes heartbeat{
 
     0%,100%{
         transform:scale(1);
@@ -493,1637 +321,2256 @@ canvas{
 
 }
 
-/* =========================
-   MOBILE CONTROLS
-========================= */
+h1{
+
+    font-size:42px;
+
+    color:#ff91b7;
+
+    margin-bottom:12px;
+
+}
+
+h2{
+
+    color:#ff91b7;
+
+    margin-bottom:15px;
+
+}
+
+.panel p{
+
+    line-height:1.7;
+
+    color:#ffdce8;
+
+    margin-bottom:18px;
+
+}
+
+.startButton{
+
+    border:none;
+
+    border-radius:50px;
+
+    padding:15px 32px;
+
+    font-size:17px;
+
+    font-weight:bold;
+
+    color:white;
+
+    background:
+        linear-gradient(
+            135deg,
+            #ff4f91,
+            #d92e6b
+        );
+
+    cursor:pointer;
+
+    box-shadow:
+        0 10px 25px
+        rgba(255,60,130,.3);
+
+    transition:.2s;
+
+}
+
+.startButton:hover{
+
+    transform:
+        translateY(-3px)
+        scale(1.03);
+
+}
+
+.hidden{
+
+    display:none!important;
+
+}
+
+/* =========================================================
+   LETTER
+========================================================= */
+
+.letter{
+
+    text-align:left;
+
+    background:
+        rgba(255,255,255,.07);
+
+    border:
+        1px solid
+        rgba(255,150,180,.2);
+
+    padding:25px;
+
+    border-radius:20px;
+
+    margin:20px 0;
+
+}
+
+.letter p{
+
+    color:#ffe7ef;
+
+    margin-bottom:13px;
+
+}
+
+.signature{
+
+    text-align:center;
+
+    color:#ff91b7;
+
+    font-weight:bold;
+
+    font-size:20px;
+
+}
+
+/* =========================================================
+   MOBILE JOYSTICK
+========================================================= */
 
 #mobileControls{
+
+    position:fixed;
+
+    inset:0;
+
+    z-index:30;
+
     display:none;
+
+    pointer-events:none;
+}
+
+#joystickBase{
+
+    position:absolute;
+
+    left:25px;
+
+    bottom:35px;
+
+    width:125px;
+
+    height:125px;
+
+    border-radius:50%;
+
+    background:
+        rgba(40,10,30,.65);
+
+    border:
+        2px solid
+        rgba(255,255,255,.2);
+
+    pointer-events:auto;
+
+}
+
+#joystickStick{
+
+    position:absolute;
+
+    width:58px;
+
+    height:58px;
+
+    left:50%;
+
+    top:50%;
+
+    transform:
+        translate(-50%,-50%);
+
+    border-radius:50%;
+
+    background:
+        rgba(255,105,160,.8);
+
+    border:
+        2px solid
+        rgba(255,255,255,.5);
+
+    box-shadow:
+        0 5px 20px
+        rgba(255,50,130,.4);
+
 }
 
 .mobileButton{
 
-    position:fixed;
+    position:absolute;
 
-    z-index:40;
-
-    width:72px;
-    height:72px;
-
-    border-radius:50%;
-
-    border:1px solid rgba(255,255,255,.3);
-
-    background:rgba(0,0,0,.65);
+    border:none;
 
     color:white;
 
     font-weight:bold;
 
-    font-size:12px;
-
-    display:flex;
-
-    align-items:center;
-    justify-content:center;
-
-    text-align:center;
-
-    box-shadow:0 5px 20px rgba(0,0,0,.35);
-}
-
-#joystick{
-
-    position:fixed;
-
-    left:25px;
-    bottom:25px;
-
-    width:125px;
-    height:125px;
-
     border-radius:50%;
 
-    background:rgba(255,255,255,.08);
+    width:75px;
 
-    border:1px solid rgba(255,255,255,.2);
+    height:75px;
 
-    z-index:40;
-}
+    pointer-events:auto;
 
-#joystickKnob{
+    border:
+        2px solid
+        rgba(255,255,255,.25);
 
-    position:absolute;
+    box-shadow:
+        0 8px 20px
+        rgba(0,0,0,.3);
 
-    width:52px;
-    height:52px;
-
-    left:50%;
-    top:50%;
-
-    transform:translate(-50%,-50%);
-
-    border-radius:50%;
-
-    background:rgba(255,255,255,.4);
-
-    border:1px solid rgba(255,255,255,.4);
 }
 
 #sprintButton{
 
     right:25px;
-    bottom:35px;
-}
 
-#jumpButton{
+    bottom:45px;
 
-    right:115px;
-    bottom:35px;
+    background:
+        rgba(255,90,130,.8);
+
 }
 
 #hideButton{
 
     right:115px;
+
     bottom:125px;
+
+    background:
+        rgba(90,60,120,.85);
+
 }
 
-#skill1Mobile{
+#mobileHint{
 
-    right:25px;
-    top:120px;
+    position:absolute;
+
+    right:20px;
+
+    bottom:15px;
+
+    color:white;
+
+    font-size:11px;
+
+    opacity:.7;
+
 }
 
-#skill2Mobile{
+/* =========================================================
+   DESKTOP HELP
+========================================================= */
 
-    right:115px;
-    top:120px;
+#mouseInfo{
+
+    position:fixed;
+
+    top:85px;
+
+    left:50%;
+
+    transform:translateX(-50%);
+
+    z-index:10;
+
+    color:#ffe6ef;
+
+    background:
+        rgba(30,5,20,.7);
+
+    border:
+        1px solid
+        rgba(255,255,255,.15);
+
+    padding:8px 16px;
+
+    border-radius:20px;
+
+    font-size:13px;
+
+    pointer-events:none;
+
 }
 
-/* =========================
+/* =========================================================
    MOBILE
-========================= */
+========================================================= */
 
-@media(max-width:800px){
-
-    #hud{
-
-        top:8px;
-        left:8px;
-
-        min-width:175px;
-
-        padding:10px 12px;
-    }
-
-    .hudTitle{
-        font-size:15px;
-    }
-
-    .hudRow{
-        font-size:11px;
-    }
-
-    #message{
-        bottom:150px;
-        font-size:12px;
-    }
-
-    #staminaContainer{
-        bottom:8px;
-        width:170px;
-    }
-
-    #skillsPanel{
-        display:none;
-    }
+@media(max-width:700px){
 
     #mobileControls{
         display:block;
     }
 
-    #alertBox{
-        top:10px;
-        font-size:13px;
-        padding:10px 15px;
-        white-space:nowrap;
+    #mouseInfo{
+        display:none;
     }
 
-    .startBox{
-        padding:24px;
+    .hudBox{
+        padding:9px 10px;
     }
 
-    .startBox h1{
-        font-size:34px;
+    .hudItem{
+        font-size:11px;
     }
 
-    .startInstructions{
+    #message{
+        bottom:175px;
         font-size:12px;
+        max-width:90%;
     }
 
-}
+    #staminaContainer{
+        bottom:160px;
+    }
 
-/* =========================
-   HIDDEN
-========================= */
+    #alertBox{
+        top:90px;
+        font-size:14px;
+    }
 
-.hidden{
-    display:none !important;
+    .panel{
+        padding:28px 20px;
+    }
+
+    h1{
+        font-size:31px;
+    }
+
+    .logoHeart{
+        font-size:70px;
+    }
+
 }
 
 </style>
-
 </head>
 
 <body>
 
+<div id="game"></div>
+
+
+<!-- HUD -->
+
 <div id="hud">
 
-    <div class="hudTitle">
-        ❤️ ASAWA Quest
-    </div>
+    <div class="hudBox">
 
-    <div class="hudRow">
-        <span>Hearts</span>
-        <span id="heartValue">0 / 12</span>
-    </div>
+        <div class="hudItem">
+            ❤️ Hearts:
+            <span id="score">0</span>/12
+        </div>
 
-    <div class="hudRow">
-        <span>Love</span>
-        <span id="loveValue">100%</span>
-    </div>
+        <div class="hudItem">
+            💗 Asawa:
+            <span id="love">100</span>%
+        </div>
 
-    <div class="hudRow">
-        <span>Level</span>
-        <span id="levelValue">1</span>
-    </div>
+        <div class="hudItem">
+            🗺️ Level:
+            <span id="level">1</span>
+        </div>
 
-    <div class="hudRow">
-        <span>Status</span>
-        <span id="statusValue">SAFE</span>
+        <div class="hudItem">
+            👁️ Status:
+            <span id="status">SAFE</span>
+        </div>
+
     </div>
 
 </div>
+
+
+<!-- ALERT -->
 
 <div id="alertBox">
     👁️ HE SEES YOU! RUN!
 </div>
 
-<div id="message">
-    Find all the hearts ❤️
+
+<!-- DESKTOP INFO -->
+
+<div id="mouseInfo">
+
+    🖱️ Drag/look around • WASD move • Shift sprint • H hide
+
 </div>
+
+
+<!-- MESSAGE -->
+
+<div id="message">
+
+    Collect all 12 hearts ❤️
+
+</div>
+
+
+<!-- STAMINA -->
 
 <div id="staminaContainer">
 
-    <div id="staminaBar"></div>
+    <div id="stamina"></div>
 
 </div>
 
-<div id="skillsPanel">
 
-    <div
-        class="skill ready"
-        id="skill1Button"
-        onclick="activateInvincible()"
-    >
-
-        <div class="skillIcon">🛡️</div>
-
-        <div class="skillName">
-            INVINCIBLE [1]
-        </div>
-
-        <div
-            class="skillCooldown"
-            id="skill1Cooldown"
-        >
-            READY
-        </div>
-
-    </div>
-
-    <div
-        class="skill ready"
-        id="skill2Button"
-        onclick="activateDash()"
-    >
-
-        <div class="skillIcon">💨</div>
-
-        <div class="skillName">
-            DASH [2]
-        </div>
-
-        <div
-            class="skillCooldown"
-            id="skill2Cooldown"
-        >
-            READY
-        </div>
-
-    </div>
-
-</div>
+<!-- MOBILE -->
 
 <div id="mobileControls">
 
-    <div id="joystick">
+    <div id="joystickBase">
 
-        <div id="joystickKnob"></div>
+        <div id="joystickStick"></div>
 
     </div>
 
-    <div
+    <button
         id="sprintButton"
-        class="mobileButton"
-    >
-        🏃<br>
+        class="mobileButton">
+
+        🏃
+        <br>
         SPRINT
-    </div>
 
-    <div
-        id="jumpButton"
-        class="mobileButton"
-    >
-        🦘<br>
-        JUMP
-    </div>
+    </button>
 
-    <div
+    <button
         id="hideButton"
-        class="mobileButton"
-    >
-        🫣<br>
+        class="mobileButton">
+
+        🫣
+        <br>
         HIDE
-    </div>
 
-    <div
-        id="skill1Mobile"
-        class="mobileButton"
-        onclick="activateInvincible()"
-    >
-        🛡️<br>
-        INVINCIBLE
-    </div>
+    </button>
 
-    <div
-        id="skill2Mobile"
-        class="mobileButton"
-        onclick="activateDash()"
-    >
-        💨<br>
-        DASH
+    <div id="mobileHint">
+        Drag screen to look
     </div>
 
 </div>
 
-<div id="startScreen">
 
-    <div class="startBox">
+<!-- START -->
+
+<div class="overlay" id="startScreen">
+
+    <div class="panel">
+
+        <div class="logoHeart">
+            💖
+        </div>
 
         <h1>
-            ASAWA Quest 3D ❤️
+            ASAWA QUEST 3D
         </h1>
 
         <p>
-            A little adventure to find your way back to your asawa.
+            Welcome to a little 3D adventure
+            made especially for you. ❤️
         </p>
 
-        <div class="startInstructions">
+        <p>
+            Collect all <b>12 hearts</b>,
+            avoid the jealous monsters,
+            and reach the magical heart.
+        </p>
 
-            <b>🎮 Controls</b><br>
+        <p>
 
-            🖱️ Move mouse left/right/up/down to control the camera<br>
+            <b>STEALTH MODE</b><br>
 
-            ⌨️ WASD / Arrow Keys — Move<br>
+            👁️ Enemies are searching for you.<br>
+            🚨 If they see you, RUN!<br>
+            🏃 Hold SHIFT to sprint.<br>
+            🫣 Find a hiding spot and hide.<br>
+            ❤️ Don't let them catch you!
 
-            🏃 Shift — Sprint<br>
+        </p>
 
-            🦘 Space — Jump<br>
+        <p>
 
-            🫣 H — Hide<br>
+            <b>PC</b><br>
 
-            🛡️ 1 — Invincible<br>
+            WASD / Arrow Keys = Move<br>
+            Mouse = Look Around<br>
+            SHIFT = Sprint<br>
+            H = Hide
 
-            💨 2 — Dash<br>
+        </p>
 
-            ❤️ Collect all 12 hearts<br>
+        <p>
 
-            👁️ Avoid the enemies' vision<br>
+            <b>Mobile</b><br>
 
-            🏠 Reach the goal after collecting every heart
+            Joystick = Move<br>
+            Drag screen = Look<br>
+            SPRINT = Run<br>
+            HIDE = Hide
 
-        </div>
+        </p>
 
-        <button id="startButton">
-            START QUEST ❤️
+        <button
+            class="startButton"
+            onclick="startGame()">
+
+            START ASAWA QUEST ❤️
+
         </button>
 
     </div>
 
 </div>
 
-<div id="finalScreen">
 
-    <div class="finalBox">
+<!-- QUESTION -->
 
-        <div class="finalHeart">
-            ❤️
+<div
+    class="overlay hidden"
+    id="questionScreen">
+
+    <div class="panel">
+
+        <div class="logoHeart">
+            💕
         </div>
 
         <h1>
-            QUEST COMPLETE!
+            YOU MADE IT!
         </h1>
 
         <p>
-            You found all the hearts.
+            You collected every heart
+            and reached the final destination.
         </p>
 
-        <p>
-            No matter how difficult the journey gets,
-            I will always find my way back to you.
-        </p>
+        <h2>
+            One final question...
+        </h2>
 
         <p>
-            <b>Forever yours. ❤️</b>
+            Will you continue this adventure
+            with me?
         </p>
+
+        <button
+            class="startButton"
+            onclick="finishGame()">
+
+            YES, FOREVER ❤️
+
+        </button>
 
     </div>
 
 </div>
 
+
+<!-- FINAL -->
+
+<div
+    class="overlay hidden"
+    id="finalScreen">
+
+    <div class="panel">
+
+        <div class="logoHeart">
+            💖
+        </div>
+
+        <h1>
+            YOU WON! 🎉
+        </h1>
+
+        <div class="letter">
+
+            <p>
+                Dear My ASAWA,
+            </p>
+
+            <p>
+                You made it through my little
+                3D Love Quest. ❤️
+            </p>
+
+            <p>
+                Every heart you collected represents
+                one of the many reasons you are
+                special to me.
+            </p>
+
+            <p>
+                Life is like a game.
+                Sometimes there are easy levels,
+                and sometimes there are difficult ones.
+            </p>
+
+            <p>
+                There will be obstacles,
+                unexpected turns,
+                and moments when we might
+                feel like giving up.
+            </p>
+
+            <p>
+                But if I get to choose who I want
+                beside me through every level...
+            </p>
+
+            <p>
+                <b>
+                    I choose you.
+                </b>
+            </p>
+
+            <p>
+                Thank you for every smile,
+                every memory,
+                every conversation,
+                and every moment.
+            </p>
+
+            <p>
+                I hope we continue this adventure
+                together for a very, very long time.
+            </p>
+
+            <p style="
+                text-align:center;
+                font-size:25px;
+            ">
+
+                I LOVE YOU. ❤️
+
+            </p>
+
+        </div>
+
+        <div class="signature">
+            Forever yours, 💕
+        </div>
+
+        <br>
+
+        <button
+            class="startButton"
+            onclick="location.reload()">
+
+            PLAY AGAIN 🔄
+
+        </button>
+
+    </div>
+
+</div>
+
+
+<!-- THREE -->
+
 <script src="https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.min.js"></script>
+
 
 <script>
 
 /* =========================================================
-   BASIC GAME VARIABLES
+   SETUP
 ========================================================= */
 
-let scene;
-let camera;
-let renderer;
+const container =
+    document.getElementById("game");
 
-let player;
+const scene =
+    new THREE.Scene();
 
-let gameStarted = false;
-let gameFinished = false;
+scene.background =
+    new THREE.Color(0x160919);
 
-let hearts = [];
+scene.fog =
+    new THREE.Fog(
+        0x160919,
+        25,
+        90
+    );
 
-let enemies = [];
 
-let hidingSpots = [];
+const camera =
+    new THREE.PerspectiveCamera(
+        65,
+        window.innerWidth /
+        window.innerHeight,
+        .1,
+        200
+    );
 
-let obstacles = [];
 
-let goal;
+const renderer =
+    new THREE.WebGLRenderer({
+        antialias:true
+    });
 
-let love = 100;
-
-let collectedHearts = 0;
-
-let stamina = 100;
-
-let isSprinting = false;
-
-let isHidden = false;
-
-let playerBeingChased = false;
-
-let searching = false;
-
-let clock = new THREE.Clock();
-
-/* =========================================================
-   CAMERA
-========================================================= */
-
-let cameraYaw = 0;
-
-let cameraPitch = 0.45;
-
-let targetCameraYaw = 0;
-
-let targetCameraPitch = 0.45;
-
-let cameraDistance = 9;
-
-/*
-    Mouse sensitivity.
-
-    LEFT  = camera left
-    RIGHT = camera right
-    UP    = camera up
-    DOWN  = camera down
-*/
-
-let mouseSensitivity = 0.0025;
-
-/* =========================================================
-   JUMP
-========================================================= */
-
-let verticalVelocity = 0;
-
-let isGrounded = true;
-
-const gravity = -32;
-
-const jumpPower = 12;
-
-/* =========================================================
-   SKILLS
-========================================================= */
-
-let invincible = false;
-
-let invincibleTimer = 0;
-
-let invincibleCooldown = 0;
-
-const invincibleDuration = 5;
-
-const invincibleCooldownTime = 12;
-
-let dashActive = false;
-
-let dashTimer = 0;
-
-let dashCooldown = 0;
-
-let dashDirection = new THREE.Vector3();
-
-const dashDuration = 0.18;
-
-const dashSpeed = 48;
-
-const dashCooldownTime = 4;
-
-/* =========================================================
-   KEYBOARD
-========================================================= */
-
-const keys = {};
-
-window.addEventListener(
-    "keydown",
-    function(e){
-
-        keys[e.code] = true;
-
-        if(
-            e.code === "Space" ||
-            e.code === "ArrowUp" ||
-            e.code === "ArrowDown" ||
-            e.code === "ArrowLeft" ||
-            e.code === "ArrowRight"
-        ){
-            e.preventDefault();
-        }
-
-        if(!gameStarted) return;
-
-        if(e.code === "Space"){
-            jump();
-        }
-
-        if(e.code === "KeyH"){
-            toggleHide();
-        }
-
-        if(e.code === "Digit1"){
-            activateInvincible();
-        }
-
-        if(e.code === "Digit2"){
-            activateDash();
-        }
-
-    },
-    {passive:false}
+renderer.setPixelRatio(
+    Math.min(
+        window.devicePixelRatio,
+        2
+    )
 );
 
-window.addEventListener(
-    "keyup",
-    function(e){
-
-        keys[e.code] = false;
-
-    }
+renderer.setSize(
+    window.innerWidth,
+    window.innerHeight
 );
 
-/* =========================================================
-   MOUSE CAMERA
-========================================================= */
+renderer.shadowMap.enabled=true;
 
-/*
-   CAMERA ONLY.
+renderer.shadowMap.type =
+    THREE.PCFSoftShadowMap;
 
-   No click.
-   No mouse drag.
-   No movement code is changed.
-
-   Move mouse LEFT  -> camera LEFT
-   Move mouse RIGHT -> camera RIGHT
-   Move mouse UP    -> camera UP
-   Move mouse DOWN  -> camera DOWN
-*/
-
-document.addEventListener(
-    "mousemove",
-    function(e){
-
-        if(
-            !gameStarted ||
-            gameFinished
-        ){
-            return;
-        }
-
-        targetCameraYaw -=
-            e.movementX * mouseSensitivity;
-
-        targetCameraPitch -=
-            e.movementY * mouseSensitivity;
-
-        targetCameraPitch =
-            THREE.MathUtils.clamp(
-                targetCameraPitch,
-                0.12,
-                1.15
-            );
-
-    }
+container.appendChild(
+    renderer.domElement
 );
 
-/* =========================================================
-   START
-========================================================= */
-
-document
-    .getElementById("startButton")
-    .addEventListener(
-        "click",
-        startGame
-    );
-
-function startGame(){
-
-    document
-        .getElementById("startScreen")
-        .classList.add("hidden");
-
-    gameStarted = true;
-
-    clock.start();
-
-    showMessage(
-        "❤️ Find all 12 hearts and reach your asawa!"
-    );
-
-}
 
 /* =========================================================
-   SCENE
+   LIGHTS
 ========================================================= */
 
-function init(){
-
-    scene = new THREE.Scene();
-
-    scene.background =
-        new THREE.Color(0x08111d);
-
-    scene.fog =
-        new THREE.Fog(
-            0x08111d,
-            25,
-            110
-        );
-
-    camera =
-        new THREE.PerspectiveCamera(
-            65,
-            window.innerWidth /
-            window.innerHeight,
-            0.1,
-            300
-        );
-
-    renderer =
-        new THREE.WebGLRenderer({
-            antialias:true
-        });
-
-    renderer.setPixelRatio(
-        Math.min(
-            window.devicePixelRatio,
-            2
-        )
+const ambient =
+    new THREE.AmbientLight(
+        0xffd8e7,
+        1.8
     );
 
-    renderer.setSize(
-        window.innerWidth,
-        window.innerHeight
+scene.add(ambient);
+
+
+const moonLight =
+    new THREE.DirectionalLight(
+        0xffb5d0,
+        3
     );
 
-    renderer.shadowMap.enabled = true;
+moonLight.position.set(
+    15,
+    30,
+    10
+);
 
-    document.body.appendChild(
-        renderer.domElement
+moonLight.castShadow=true;
+
+moonLight.shadow.mapSize.width=2048;
+moonLight.shadow.mapSize.height=2048;
+
+scene.add(moonLight);
+
+
+const pinkLight =
+    new THREE.PointLight(
+        0xff3f8e,
+        15,
+        40
     );
 
-    const ambient =
-        new THREE.HemisphereLight(
-            0xffffff,
-            0x223344,
-            1.8
-        );
+pinkLight.position.set(
+    0,
+    8,
+    0
+);
 
-    scene.add(ambient);
+scene.add(pinkLight);
 
-    const moon =
-        new THREE.DirectionalLight(
-            0xffffff,
-            2
-        );
 
-    moon.position.set(
-        30,
-        60,
-        20
-    );
+/* =========================================================
+   GROUND
+========================================================= */
 
-    moon.castShadow = true;
+const WORLD_SIZE=80;
 
-    scene.add(moon);
+const ground =
+    new THREE.Mesh(
 
-    const groundGeometry =
         new THREE.PlaneGeometry(
-            140,
-            140
-        );
+            WORLD_SIZE,
+            WORLD_SIZE
+        ),
 
-    const groundMaterial =
         new THREE.MeshStandardMaterial({
-            color:0x17351f,
-            roughness:1
-        });
+            color:0x32142a,
+            roughness:.9
+        })
 
-    const ground =
-        new THREE.Mesh(
-            groundGeometry,
-            groundMaterial
-        );
-
-    ground.rotation.x =
-        -Math.PI / 2;
-
-    ground.receiveShadow = true;
-
-    scene.add(ground);
-
-    const grid =
-        new THREE.GridHelper(
-            140,
-            70,
-            0x35624a,
-            0x1c3828
-        );
-
-    grid.position.y = .01;
-
-    scene.add(grid);
-
-    createPlayer();
-
-    createEnvironment();
-
-    createHearts();
-
-    createEnemies();
-
-    createGoal();
-
-    updateHUD();
-
-    window.addEventListener(
-        "resize",
-        onResize
     );
 
-    setupMobileControls();
+ground.rotation.x=-Math.PI/2;
 
-    animate();
+ground.receiveShadow=true;
 
+scene.add(ground);
+
+
+const grid =
+    new THREE.GridHelper(
+        WORLD_SIZE,
+        40,
+        0xff4f91,
+        0x5a2445
+    );
+
+grid.position.y=.03;
+
+grid.material.opacity=.18;
+grid.material.transparent=true;
+
+scene.add(grid);
+
+
+/* =========================================================
+   TREES
+========================================================= */
+
+function createTree(x,z){
+
+    const group =
+        new THREE.Group();
+
+
+    const trunk =
+        new THREE.Mesh(
+
+            new THREE.CylinderGeometry(
+                .5,
+                .7,
+                3,
+                8
+            ),
+
+            new THREE.MeshStandardMaterial({
+                color:0x5c2c30
+            })
+
+        );
+
+    trunk.position.y=1.5;
+
+    trunk.castShadow=true;
+
+    group.add(trunk);
+
+
+    const leaves =
+        new THREE.Mesh(
+
+            new THREE.SphereGeometry(
+                2.2,
+                12,
+                12
+            ),
+
+            new THREE.MeshStandardMaterial({
+                color:0x762b54
+            })
+
+        );
+
+    leaves.position.y=4;
+
+    leaves.castShadow=true;
+
+    group.add(leaves);
+
+
+    group.position.set(
+        x,
+        0,
+        z
+    );
+
+    scene.add(group);
 }
+
+
+for(
+    let i=0;
+    i<25;
+    i++
+){
+
+    let x =
+        (Math.random()-.5)*70;
+
+    let z =
+        (Math.random()-.5)*70;
+
+    if(
+        Math.abs(x)<10 &&
+        Math.abs(z)<10
+    ){
+
+        x+=15;
+
+    }
+
+    createTree(x,z);
+}
+
 
 /* =========================================================
    PLAYER
 ========================================================= */
 
-function createPlayer(){
+const player =
+    new THREE.Group();
 
-    player =
-        new THREE.Group();
+scene.add(player);
 
-    const body =
-        new THREE.Mesh(
-            new THREE.CapsuleGeometry(
-                .55,
-                1.1,
-                8,
-                16
-            ),
-            new THREE.MeshStandardMaterial({
-                color:0xff79a8,
-                roughness:.55
-            })
-        );
 
-    body.position.y = 1.1;
+const body =
+    new THREE.Mesh(
 
-    body.castShadow = true;
+        new THREE.SphereGeometry(
+            1.15,
+            20,
+            20
+        ),
 
-    player.add(body);
-
-    const head =
-        new THREE.Mesh(
-            new THREE.SphereGeometry(
-                .48,
-                16,
-                16
-            ),
-            new THREE.MeshStandardMaterial({
-                color:0xffc7a8
-            })
-        );
-
-    head.position.y = 2.1;
-
-    head.castShadow = true;
-
-    player.add(head);
-
-    const heartShape =
-        new THREE.Shape();
-
-    heartShape.moveTo(
-        0,
-        .25
-    );
-
-    heartShape.bezierCurveTo(
-        0,
-        .65,
-        -.7,
-        .55,
-        -.7,
-        .05
-    );
-
-    heartShape.bezierCurveTo(
-        -.7,
-        -.35,
-        0,
-        -.7,
-        0,
-        -1
-    );
-
-    heartShape.bezierCurveTo(
-        0,
-        -.7,
-        .7,
-        -.35,
-        .7,
-        .05
-    );
-
-    heartShape.bezierCurveTo(
-        .7,
-        .55,
-        0,
-        .65,
-        0,
-        .25
-    );
-
-    const heartGeometry =
-        new THREE.ShapeGeometry(
-            heartShape
-        );
-
-    const heartMesh =
-        new THREE.Mesh(
-            heartGeometry,
-            new THREE.MeshStandardMaterial({
-                color:0xff1744,
-                emissive:0x550011,
-                side:THREE.DoubleSide
-            })
-        );
-
-    heartMesh.scale.set(
-        .22,
-        .22,
-        .22
-    );
-
-    heartMesh.position.set(
-        0,
-        1.45,
-        -.5
-    );
-
-    heartMesh.rotation.x =
-        Math.PI;
-
-    player.add(heartMesh);
-
-    player.position.set(
-        0,
-        0,
-        30
-    );
-
-    scene.add(player);
-
-}
-
-/* =========================================================
-   ENVIRONMENT
-========================================================= */
-
-function createEnvironment(){
-
-    for(let i=0;i<75;i++){
-
-        let x =
-            (Math.random()-.5)*120;
-
-        let z =
-            (Math.random()-.5)*120;
-
-        if(
-            Math.abs(x)<10 &&
-            Math.abs(z-30)<10
-        ){
-            continue;
-        }
-
-        createTree(
-            x,
-            z
-        );
-
-    }
-
-    const obstaclePositions = [
-
-        [-15,-5,8,3],
-        [15,5,7,4],
-        [-25,-25,10,3],
-        [22,-18,5,9],
-        [0,-12,7,3],
-        [-8,15,5,7],
-        [18,25,9,3],
-        [-28,18,4,9]
-
-    ];
-
-    obstaclePositions.forEach(
-        p => {
-
-            createObstacle(
-                p[0],
-                p[1],
-                p[2],
-                p[3]
-            );
-
-        }
-    );
-
-    createHidingSpot(
-        -20,
-        8
-    );
-
-    createHidingSpot(
-        12,
-        -10
-    );
-
-    createHidingSpot(
-        25,
-        17
-    );
-
-    createHidingSpot(
-        -30,
-        -18
-    );
-
-}
-
-/* =========================================================
-   TREE
-========================================================= */
-
-function createTree(
-    x,
-    z
-){
-
-    const tree =
-        new THREE.Group();
-
-    const trunk =
-        new THREE.Mesh(
-            new THREE.CylinderGeometry(
-                .35,
-                .5,
-                4,
-                8
-            ),
-            new THREE.MeshStandardMaterial({
-                color:0x543a25
-            })
-        );
-
-    trunk.position.y = 2;
-
-    trunk.castShadow = true;
-
-    tree.add(trunk);
-
-    const leaves =
-        new THREE.Mesh(
-            new THREE.SphereGeometry(
-                2.2,
-                8,
-                8
-            ),
-            new THREE.MeshStandardMaterial({
-                color:0x1f6b3a
-            })
-        );
-
-    leaves.position.y = 5;
-
-    leaves.castShadow = true;
-
-    tree.add(leaves);
-
-    tree.position.set(
-        x,
-        0,
-        z
-    );
-
-    scene.add(tree);
-
-}
-
-/* =========================================================
-   OBSTACLE
-========================================================= */
-
-function createObstacle(
-    x,
-    z,
-    width,
-    depth
-){
-
-    const geometry =
-        new THREE.BoxGeometry(
-            width,
-            2.5,
-            depth
-        );
-
-    const material =
         new THREE.MeshStandardMaterial({
-            color:0x4a4f59
-        });
+            color:0xff739f,
+            roughness:.5
+        })
 
-    const mesh =
-        new THREE.Mesh(
-            geometry,
-            material
-        );
-
-    mesh.position.set(
-        x,
-        1.25,
-        z
     );
 
-    mesh.castShadow = true;
+body.position.y=1.25;
 
-    mesh.receiveShadow = true;
+body.castShadow=true;
 
-    scene.add(mesh);
+player.add(body);
 
-    obstacles.push({
-        mesh:mesh,
-        x:x,
-        z:z,
-        width:width,
-        depth:depth
-    });
 
-}
+const head =
+    new THREE.Mesh(
 
-/* =========================================================
-   HIDING SPOT
-========================================================= */
+        new THREE.SphereGeometry(
+            .85,
+            20,
+            20
+        ),
 
-function createHidingSpot(
-    x,
-    z
-){
+        new THREE.MeshStandardMaterial({
+            color:0xffc0d0
+        })
 
-    const group =
-        new THREE.Group();
-
-    const box =
-        new THREE.Mesh(
-            new THREE.BoxGeometry(
-                3,
-                2.5,
-                3
-            ),
-            new THREE.MeshStandardMaterial({
-                color:0x263238
-            })
-        );
-
-    box.position.y = 1.25;
-
-    box.castShadow = true;
-
-    group.add(box);
-
-    const roof =
-        new THREE.Mesh(
-            new THREE.ConeGeometry(
-                2.5,
-                1.3,
-                4
-            ),
-            new THREE.MeshStandardMaterial({
-                color:0x5d4037
-            })
-        );
-
-    roof.position.y = 3.1;
-
-    roof.rotation.y =
-        Math.PI / 4;
-
-    group.add(roof);
-
-    group.position.set(
-        x,
-        0,
-        z
     );
 
-    scene.add(group);
+head.position.y=2.45;
 
-    hidingSpots.push({
-        x:x,
-        z:z,
-        radius:4
-    });
+head.castShadow=true;
 
+player.add(head);
+
+
+function createEar(x){
+
+    const ear =
+        new THREE.Mesh(
+
+            new THREE.SphereGeometry(
+                .3,
+                12,
+                12
+            ),
+
+            new THREE.MeshStandardMaterial({
+                color:0xffa0b9
+            })
+
+        );
+
+    ear.position.set(
+        x,
+        2.65,
+        0
+    );
+
+    player.add(ear);
 }
+
+createEar(-.55);
+createEar(.55);
+
+
+function createEye(x){
+
+    const eye =
+        new THREE.Mesh(
+
+            new THREE.SphereGeometry(
+                .09,
+                10,
+                10
+            ),
+
+            new THREE.MeshBasicMaterial({
+                color:0x24101b
+            })
+
+        );
+
+    eye.position.set(
+        x,
+        2.55,
+        .75
+    );
+
+    player.add(eye);
+}
+
+createEye(-.28);
+createEye(.28);
+
+
+player.position.set(
+    0,
+    0,
+    30
+);
+
 
 /* =========================================================
    HEARTS
 ========================================================= */
 
-function createHearts(){
+const hearts=[];
 
-    const positions = [
 
-        [-25,20],
-        [-10,25],
-        [8,27],
-        [25,25],
-
-        [-30,5],
-        [-5,5],
-        [20,8],
-
-        [-25,-10],
-        [-10,-18],
-        [5,-8],
-        [25,-10],
-
-        [30,-25]
-
-    ];
-
-    positions.forEach(
-        p => createHeart(
-            p[0],
-            p[1]
-        )
-    );
-
-}
-
-function createHeart(
-    x,
-    z
-){
+function createHeart(x,z){
 
     const group =
         new THREE.Group();
 
-    const geometry =
-        new THREE.SphereGeometry(
-            .45,
-            12,
-            12
-        );
 
     const material =
         new THREE.MeshStandardMaterial({
-            color:0xff2d55,
-            emissive:0x550011,
-            emissiveIntensity:.7
+
+            color:0xff2f70,
+
+            emissive:0xff174f,
+
+            emissiveIntensity:1.5,
+
+            roughness:.25,
+
+            metalness:.2
+
         });
 
-    const gem =
-        new THREE.Mesh(
-            geometry,
-            material
-        );
 
-    group.add(gem);
-
-    group.position.set(
-        x,
-        1.3,
-        z
-    );
-
-    group.userData.baseY = 1.3;
-
-    scene.add(group);
-
-    hearts.push(group);
-
-}
-
-/* =========================================================
-   ENEMIES
-========================================================= */
-
-function createEnemies(){
-
-    const positions = [
-
-        [-20,0],
-        [20,0],
-        [0,-20],
-        [30,10],
-        [-30,-10]
-
-    ];
-
-    positions.forEach(
-        (p,index) => {
-
-            createEnemy(
-                p[0],
-                p[1],
-                index
-            );
-
-        }
-    );
-
-}
-
-function createEnemy(
-    x,
-    z,
-    index
-){
-
-    const group =
-        new THREE.Group();
-
-    const body =
-        new THREE.Mesh(
-            new THREE.CapsuleGeometry(
-                .65,
-                1.3,
-                8,
-                16
-            ),
-            new THREE.MeshStandardMaterial({
-                color:0x8b1e2d
-            })
-        );
-
-    body.position.y = 1.2;
-
-    body.castShadow = true;
-
-    group.add(body);
-
-    const head =
+    const sphere1 =
         new THREE.Mesh(
             new THREE.SphereGeometry(
-                .5,
+                .55,
                 16,
                 16
             ),
-            new THREE.MeshStandardMaterial({
-                color:0x8e6b5a
-            })
+            material
         );
 
-    head.position.y = 2.25;
+    const sphere2 =
+        new THREE.Mesh(
+            new THREE.SphereGeometry(
+                .55,
+                16,
+                16
+            ),
+            material
+        );
 
-    group.add(head);
+    sphere1.position.x=-.38;
+    sphere2.position.x=.38;
+
+
+    const bottom =
+        new THREE.Mesh(
+
+            new THREE.ConeGeometry(
+                .78,
+                1.2,
+                4
+            ),
+
+            material
+
+        );
+
+    bottom.rotation.z=Math.PI;
+    bottom.position.y=-.5;
+
+
+    group.add(
+        sphere1,
+        sphere2,
+        bottom
+    );
+
 
     group.position.set(
         x,
-        0,
+        2,
         z
     );
 
     scene.add(group);
 
-    enemies.push({
 
-        mesh:group,
+    hearts.push({
 
-        state:"PATROL",
+        object:group,
 
-        patrolAngle:
-            Math.random()*Math.PI*2,
+        collected:false,
 
-        patrolRadius:8,
-
-        patrolCenter:
-            new THREE.Vector3(
-                x,
-                0,
-                z
-            ),
-
-        speed:2.2,
-
-        chaseSpeed:5.5,
-
-        visionRange:16,
-
-        visionAngle:
-            Math.PI/3,
-
-        searchTimer:0,
-
-        lastSeen:
-            new THREE.Vector3(
-                x,
-                0,
-                z
-            ),
-
-        index:index
+        baseY:2
 
     });
 
 }
 
+
+const heartPositions=[
+
+    [-25,20],
+    [-12,10],
+    [5,17],
+    [22,25],
+
+    [-25,2],
+    [-8,-5],
+    [10,-3],
+    [28,5],
+
+    [-25,-18],
+    [-8,-25],
+    [12,-20],
+    [25,-10]
+
+];
+
+
+heartPositions.forEach(
+    p=>createHeart(p[0],p[1])
+);
+
+
+/* =========================================================
+   HIDING SPOTS
+========================================================= */
+
+const hidingSpots=[];
+
+
+function createHidingSpot(x,z){
+
+    const group =
+        new THREE.Group();
+
+
+    /* bush */
+
+    const bush =
+        new THREE.Mesh(
+
+            new THREE.SphereGeometry(
+                2.2,
+                16,
+                12
+            ),
+
+            new THREE.MeshStandardMaterial({
+                color:0x214d35,
+                roughness:1
+            })
+
+        );
+
+    bush.position.y=1.7;
+
+    bush.scale.set(
+        1.3,
+        .9,
+        1.2
+    );
+
+    bush.castShadow=true;
+
+    group.add(bush);
+
+
+    /* small flowers */
+
+    for(
+        let i=0;
+        i<5;
+        i++
+    ){
+
+        const flower =
+            new THREE.Mesh(
+
+                new THREE.SphereGeometry(
+                    .15,
+                    8,
+                    8
+                ),
+
+                new THREE.MeshBasicMaterial({
+                    color:0xff9fca
+                })
+
+            );
+
+        flower.position.set(
+            (Math.random()-.5)*3,
+            2+
+            Math.random()*.7,
+            (Math.random()-.5)*2
+        );
+
+        group.add(flower);
+
+    }
+
+
+    group.position.set(
+        x,
+        0,
+        z
+    );
+
+
+    scene.add(group);
+
+
+    hidingSpots.push({
+        object:group,
+        x:x,
+        z:z,
+        radius:3.5
+    });
+
+}
+
+
+createHidingSpot(
+    -30,
+    13
+);
+
+createHidingSpot(
+    -15,
+    -5
+);
+
+createHidingSpot(
+    2,
+    -15
+);
+
+createHidingSpot(
+    24,
+    -18
+);
+
+createHidingSpot(
+    27,
+    15
+);
+
+
+/* =========================================================
+   ENEMIES
+========================================================= */
+
+const enemies=[];
+
+
+function createEnemy(x,z){
+
+    const enemy =
+        new THREE.Group();
+
+
+    const body =
+        new THREE.Mesh(
+
+            new THREE.SphereGeometry(
+                1.2,
+                16,
+                16
+            ),
+
+            new THREE.MeshStandardMaterial({
+
+                color:0x42112e,
+
+                emissive:0x250018,
+
+                emissiveIntensity:.7
+
+            })
+
+        );
+
+    body.position.y=1.2;
+
+    body.castShadow=true;
+
+    enemy.add(body);
+
+
+    const eyeMaterial =
+        new THREE.MeshBasicMaterial({
+            color:0xff315f
+        });
+
+
+    const eye1 =
+        new THREE.Mesh(
+
+            new THREE.SphereGeometry(
+                .13,
+                8,
+                8
+            ),
+
+            eyeMaterial
+
+        );
+
+    eye1.position.set(
+        -.3,
+        1.45,
+        1
+    );
+
+
+    const eye2=eye1.clone();
+
+    eye2.position.x=.3;
+
+    enemy.add(
+        eye1,
+        eye2
+    );
+
+
+    enemy.position.set(
+        x,
+        0,
+        z
+    );
+
+    scene.add(enemy);
+
+
+    /*
+       VISION CONE
+    */
+
+    const visionGeometry =
+        new THREE.ConeGeometry(
+            7,
+            12,
+            32,
+            1,
+            true
+        );
+
+
+    const visionMaterial =
+        new THREE.MeshBasicMaterial({
+
+            color:0xff305f,
+
+            transparent:true,
+
+            opacity:.12,
+
+            depthWrite:false,
+
+            side:THREE.DoubleSide
+
+        });
+
+
+    const vision =
+        new THREE.Mesh(
+            visionGeometry,
+            visionMaterial
+        );
+
+
+    vision.rotation.x=
+        -Math.PI/2;
+
+
+    vision.position.y=
+        2.2;
+
+
+    /*
+       Cone points forward along
+       the enemy's local -Z.
+    */
+
+    vision.rotation.z=Math.PI;
+
+    enemy.add(vision);
+
+
+    enemies.push({
+
+        object:enemy,
+
+        vision:vision,
+
+        startX:x,
+
+        startZ:z,
+
+        phase:
+            Math.random()*10,
+
+        state:"PATROL",
+
+        lastKnown:
+            new THREE.Vector3(),
+
+        searchTimer:0,
+
+        catchCooldown:0
+
+    });
+
+}
+
+
+createEnemy(-18,8);
+createEnemy(2,5);
+createEnemy(18,-2);
+createEnemy(-15,-12);
+createEnemy(18,-18);
+
+
 /* =========================================================
    GOAL
 ========================================================= */
 
-function createGoal(){
+const goal =
+    new THREE.Group();
 
-    goal =
-        new THREE.Group();
 
-    const base =
-        new THREE.Mesh(
-            new THREE.CylinderGeometry(
-                2.5,
-                2.5,
-                .5,
-                24
-            ),
-            new THREE.MeshStandardMaterial({
-                color:0xffc107,
-                emissive:0x553300
-            })
-        );
+const goalCore =
+    new THREE.Mesh(
 
-    base.position.y = .25;
+        new THREE.SphereGeometry(
+            1.7,
+            24,
+            24
+        ),
 
-    goal.add(base);
+        new THREE.MeshStandardMaterial({
 
-    const ring =
-        new THREE.Mesh(
-            new THREE.TorusGeometry(
-                2,
-                .25,
-                12,
-                32
-            ),
-            new THREE.MeshStandardMaterial({
-                color:0xffe082,
-                emissive:0xffaa00
-            })
-        );
+            color:0xff72aa,
 
-    ring.position.y = 2;
+            emissive:0xff2975,
 
-    goal.add(ring);
+            emissiveIntensity:2
 
-    goal.position.set(
-        30,
-        0,
-        -28
+        })
+
     );
 
-    scene.add(goal);
+goalCore.position.y=2.5;
 
-}
+goal.add(goalCore);
 
-/* =========================================================
-   MOVEMENT
-   UNCHANGED
-========================================================= */
 
-function updatePlayer(delta){
+const ring =
+    new THREE.Mesh(
 
-    if(!isHidden){
+        new THREE.TorusGeometry(
+            2.5,
+            .12,
+            12,
+            48
+        ),
 
-        verticalVelocity +=
-            gravity * delta;
+        new THREE.MeshBasicMaterial({
+            color:0xff9fc2
+        })
 
-        player.position.y +=
-            verticalVelocity * delta;
+    );
 
-        if(
-            player.position.y <= 0
-        ){
+ring.rotation.x=Math.PI/2;
 
-            player.position.y = 0;
+ring.position.y=.3;
 
-            verticalVelocity = 0;
+goal.add(ring);
 
-            isGrounded = true;
 
-        }
+goal.position.set(
+    30,
+    0,
+    -28
+);
 
-    }else{
+scene.add(goal);
 
-        player.position.y = 0;
-
-        verticalVelocity = 0;
-
-        isGrounded = true;
-
-    }
-
-    if(isHidden){
-
-        return;
-
-    }
-
-    let forward = 0;
-
-    let strafe = 0;
-
-    if(
-        keys["KeyW"] ||
-        keys["ArrowUp"]
-    ){
-        forward += 1;
-    }
-
-    if(
-        keys["KeyS"] ||
-        keys["ArrowDown"]
-    ){
-        forward -= 1;
-    }
-
-    if(
-        keys["KeyA"] ||
-        keys["ArrowLeft"]
-    ){
-        strafe -= 1;
-    }
-
-    if(
-        keys["KeyD"] ||
-        keys["ArrowRight"]
-    ){
-        strafe += 1;
-    }
-
-    forward += mobileForward;
-
-    strafe += mobileStrafe;
-
-    let length =
-        Math.sqrt(
-            forward*forward +
-            strafe*strafe
-        );
-
-    if(length > 1){
-
-        forward /= length;
-
-        strafe /= length;
-
-    }
-
-    isSprinting =
-        keys["ShiftLeft"] ||
-        keys["ShiftRight"] ||
-        mobileSprint;
-
-    let speed = 6;
-
-    if(isSprinting && stamina > 0){
-
-        speed = 10;
-
-        stamina -=
-            30 * delta;
-
-    }else{
-
-        stamina +=
-            18 * delta;
-
-    }
-
-    stamina =
-        THREE.MathUtils.clamp(
-            stamina,
-            0,
-            100
-        );
-
-    if(dashActive){
-
-        const dashMove =
-            dashDirection.clone()
-                .multiplyScalar(
-                    dashSpeed * delta
-                );
-
-        moveWithCollision(
-            dashMove
-        );
-
-        dashTimer -= delta;
-
-        if(dashTimer <= 0){
-
-            dashActive = false;
-
-        }
-
-    }else{
-
-        if(
-            Math.abs(forward) > .01 ||
-            Math.abs(strafe) > .01
-        ){
-
-            const direction =
-                new THREE.Vector3();
-
-            const forwardVector =
-                new THREE.Vector3(
-                    -Math.sin(cameraYaw),
-                    0,
-                    -Math.cos(cameraYaw)
-                );
-
-            const rightVector =
-                new THREE.Vector3(
-                    Math.cos(cameraYaw),
-                    0,
-                    -Math.sin(cameraYaw)
-                );
-
-            direction
-                .addScaledVector(
-                    forwardVector,
-                    forward
-                )
-                .addScaledVector(
-                    rightVector,
-                    strafe
-                );
-
-            direction.normalize();
-
-            const movement =
-                direction.multiplyScalar(
-                    speed * delta
-                );
-
-            moveWithCollision(
-                movement
-            );
-
-        }
-
-    }
-
-    updateStamina();
-
-}
 
 /* =========================================================
-   MOVE WITH COLLISION
+   OBSTACLES
 ========================================================= */
 
-function moveWithCollision(
-    movement
+const obstacles=[];
+
+
+function createObstacle(
+    x,
+    z,
+    w,
+    d
 ){
 
-    const next =
-        player.position.clone()
-            .add(movement);
+    const object =
+        new THREE.Mesh(
 
-    const airborne =
-        player.position.y > 2.3;
+            new THREE.BoxGeometry(
+                w,
+                3,
+                d
+            ),
 
-    if(
-        !airborne &&
-        isBlocked(next)
-    ){
-        return;
+            new THREE.MeshStandardMaterial({
+                color:0x632444,
+                roughness:.8
+            })
+
+        );
+
+    object.position.set(
+        x,
+        1.5,
+        z
+    );
+
+    object.castShadow=true;
+    object.receiveShadow=true;
+
+    scene.add(object);
+
+    obstacles.push(object);
+}
+
+
+createObstacle(
+    -10,
+    22,
+    15,
+    2
+);
+
+createObstacle(
+    10,
+    12,
+    2,
+    15
+);
+
+createObstacle(
+    -5,
+    -2,
+    16,
+    2
+);
+
+createObstacle(
+    14,
+    -12,
+    2,
+    15
+);
+
+createObstacle(
+    -18,
+    -20,
+    18,
+    2
+);
+
+createObstacle(
+    5,
+    -25,
+    18,
+    2
+);
+
+
+/* =========================================================
+   CONTROLS
+========================================================= */
+
+const keys={
+
+    forward:false,
+    backward:false,
+    left:false,
+    right:false,
+    sprint:false
+
+};
+
+
+window.addEventListener(
+    "keydown",
+    event=>{
+
+        const key=
+            event.key.toLowerCase();
+
+
+        if(
+            key==="w" ||
+            event.key==="ArrowUp"
+        )
+            keys.forward=true;
+
+
+        if(
+            key==="s" ||
+            event.key==="ArrowDown"
+        )
+            keys.backward=true;
+
+
+        if(
+            key==="a" ||
+            event.key==="ArrowLeft"
+        )
+            keys.left=true;
+
+
+        if(
+            key==="d" ||
+            event.key==="ArrowRight"
+        )
+            keys.right=true;
+
+
+        if(
+            event.key==="Shift"
+        )
+            keys.sprint=true;
+
+
+        if(
+            key==="h"
+        )
+            toggleHide();
+
+    }
+);
+
+
+window.addEventListener(
+    "keyup",
+    event=>{
+
+        const key=
+            event.key.toLowerCase();
+
+
+        if(
+            key==="w" ||
+            event.key==="ArrowUp"
+        )
+            keys.forward=false;
+
+
+        if(
+            key==="s" ||
+            event.key==="ArrowDown"
+        )
+            keys.backward=false;
+
+
+        if(
+            key==="a" ||
+            event.key==="ArrowLeft"
+        )
+            keys.left=false;
+
+
+        if(
+            key==="d" ||
+            event.key==="ArrowRight"
+        )
+            keys.right=false;
+
+
+        if(
+            event.key==="Shift"
+        )
+            keys.sprint=false;
+
+    }
+);
+
+
+/* =========================================================
+   CAMERA
+========================================================= */
+
+let cameraYaw=0;
+
+let cameraPitch=.45;
+
+let cameraDistance=9;
+
+let cameraTouching=false;
+
+let lastTouchX=0;
+
+let lastTouchY=0;
+
+
+renderer.domElement.addEventListener(
+    "mousedown",
+    event=>{
+
+        cameraTouching=true;
+
+        lastTouchX=
+            event.clientX;
+
+        lastTouchY=
+            event.clientY;
+
+    }
+);
+
+
+window.addEventListener(
+    "mousemove",
+    event=>{
+
+        if(!cameraTouching)
+            return;
+
+
+        const dx=
+            event.clientX-
+            lastTouchX;
+
+        const dy=
+            event.clientY-
+            lastTouchY;
+
+
+        cameraYaw -=
+            dx*.004;
+
+        cameraPitch -=
+            dy*.002;
+
+
+        cameraPitch=
+            THREE.MathUtils.clamp(
+                cameraPitch,
+                .2,
+                1.1
+            );
+
+
+        lastTouchX=
+            event.clientX;
+
+        lastTouchY=
+            event.clientY;
+
+    }
+);
+
+
+window.addEventListener(
+    "mouseup",
+    ()=>{
+        cameraTouching=false;
+    }
+);
+
+
+/* =========================================================
+   MOBILE CAMERA TOUCH
+========================================================= */
+
+renderer.domElement.addEventListener(
+    "touchstart",
+    event=>{
+
+        if(
+            event.touches.length===1
+        ){
+
+            lastTouchX=
+                event.touches[0].clientX;
+
+            lastTouchY=
+                event.touches[0].clientY;
+
+        }
+
+    },
+    {passive:true}
+);
+
+
+renderer.domElement.addEventListener(
+    "touchmove",
+    event=>{
+
+        if(
+            event.touches.length!==1
+        )
+            return;
+
+
+        const x=
+            event.touches[0].clientX;
+
+        const y=
+            event.touches[0].clientY;
+
+
+        const dx=
+            x-lastTouchX;
+
+        const dy=
+            y-lastTouchY;
+
+
+        /*
+           Ignore touches around
+           joystick/buttons.
+        */
+
+        if(
+            x<180 ||
+            y>window.innerHeight-180
+        ){
+
+            lastTouchX=x;
+            lastTouchY=y;
+
+            return;
+
+        }
+
+
+        cameraYaw -=
+            dx*.005;
+
+        cameraPitch -=
+            dy*.003;
+
+
+        cameraPitch=
+            THREE.MathUtils.clamp(
+                cameraPitch,
+                .2,
+                1.1
+            );
+
+
+        lastTouchX=x;
+        lastTouchY=y;
+
+    },
+    {passive:true}
+);
+
+
+/* =========================================================
+   MOBILE JOYSTICK
+========================================================= */
+
+const joystickBase =
+    document.getElementById(
+        "joystickBase"
+    );
+
+const joystickStick =
+    document.getElementById(
+        "joystickStick"
+    );
+
+
+let joystickActive=false;
+
+let joystickX=0;
+
+let joystickY=0;
+
+
+function updateJoystick(
+    x,
+    y
+){
+
+    const rect=
+        joystickBase
+            .getBoundingClientRect();
+
+
+    const centerX=
+        rect.left+
+        rect.width/2;
+
+    const centerY=
+        rect.top+
+        rect.height/2;
+
+
+    let dx=
+        x-centerX;
+
+    let dy=
+        y-centerY;
+
+
+    const max=
+        45;
+
+
+    const distance=
+        Math.sqrt(
+            dx*dx+
+            dy*dy
+        );
+
+
+    if(distance>max){
+
+        dx=
+            dx/distance*
+            max;
+
+        dy=
+            dy/distance*
+            max;
+
     }
 
-    player.position.x =
-        next.x;
 
-    player.position.z =
-        next.z;
+    joystickX=
+        dx/max;
+
+    joystickY=
+        dy/max;
+
+
+    joystickStick.style.transform=
+        `translate(calc(-50% + ${dx}px),
+                   calc(-50% + ${dy}px))`;
 
 }
+
+
+joystickBase.addEventListener(
+    "touchstart",
+    event=>{
+
+        joystickActive=true;
+
+        const t=
+            event.touches[0];
+
+        updateJoystick(
+            t.clientX,
+            t.clientY
+        );
+
+    },
+    {passive:true}
+);
+
+
+joystickBase.addEventListener(
+    "touchmove",
+    event=>{
+
+        if(!joystickActive)
+            return;
+
+        const t=
+            event.touches[0];
+
+        updateJoystick(
+            t.clientX,
+            t.clientY
+        );
+
+    },
+    {passive:true}
+);
+
+
+function resetJoystick(){
+
+    joystickActive=false;
+
+    joystickX=0;
+    joystickY=0;
+
+    joystickStick.style.transform=
+        "translate(-50%,-50%)";
+
+}
+
+
+joystickBase.addEventListener(
+    "touchend",
+    resetJoystick
+);
+
+joystickBase.addEventListener(
+    "touchcancel",
+    resetJoystick
+);
+
+
+/* =========================================================
+   MOBILE BUTTONS
+========================================================= */
+
+const sprintButton =
+    document.getElementById(
+        "sprintButton"
+    );
+
+
+sprintButton.addEventListener(
+    "touchstart",
+    event=>{
+
+        event.preventDefault();
+
+        keys.sprint=true;
+
+    },
+    {passive:false}
+);
+
+
+sprintButton.addEventListener(
+    "touchend",
+    event=>{
+
+        event.preventDefault();
+
+        keys.sprint=false;
+
+    },
+    {passive:false}
+);
+
+
+sprintButton.addEventListener(
+    "touchcancel",
+    ()=>{
+        keys.sprint=false;
+    }
+);
+
+
+document
+    .getElementById(
+        "hideButton"
+    )
+    .addEventListener(
+        "touchstart",
+        event=>{
+
+            event.preventDefault();
+
+            toggleHide();
+
+        },
+        {passive:false}
+    );
+
+
+/* =========================================================
+   GAME VARIABLES
+========================================================= */
+
+let gameStarted=false;
+
+let score=0;
+
+let love=100;
+
+let level=1;
+
+let lastTime=0;
+
+let stamina=100;
+
+let isHidden=false;
+
+
+/* =========================================================
+   START
+========================================================= */
+
+function startGame(){
+
+    gameStarted=true;
+
+    document
+        .getElementById(
+            "startScreen"
+        )
+        .classList.add(
+            "hidden"
+        );
+
+    setMessage(
+        "Collect all 12 hearts ❤️"
+    );
+
+    updateStatus(
+        "SAFE"
+    );
+
+}
+
+
+/* =========================================================
+   MESSAGE
+========================================================= */
+
+function setMessage(text){
+
+    document
+        .getElementById(
+            "message"
+        )
+        .innerText=text;
+
+}
+
+
+/* =========================================================
+   STATUS
+========================================================= */
+
+function updateStatus(
+    text
+){
+
+    const element=
+        document.getElementById(
+            "status"
+        );
+
+    element.innerText=text;
+
+    if(text==="CHASE"){
+
+        element.style.color=
+            "#ff315f";
+
+    }
+    else if(text==="SEARCHING"){
+
+        element.style.color=
+            "#ffd34d";
+
+    }
+    else if(text==="HIDDEN"){
+
+        element.style.color=
+            "#c58cff";
+
+    }
+    else{
+
+        element.style.color=
+            "#ff8fb5";
+
+    }
+
+}
+
+
+/* =========================================================
+   ALERT
+========================================================= */
+
+function showAlert(
+    text,
+    searching=false
+){
+
+    const box=
+        document.getElementById(
+            "alertBox"
+        );
+
+    box.innerText=text;
+
+    box.classList.toggle(
+        "searching",
+        searching
+    );
+
+    box.classList.add(
+        "show"
+    );
+
+}
+
+
+function hideAlert(){
+
+    document
+        .getElementById(
+            "alertBox"
+        )
+        .classList.remove(
+            "show"
+        );
+
+}
+
 
 /* =========================================================
    COLLISION
@@ -2133,27 +2580,38 @@ function isBlocked(
     position
 ){
 
-    const radius = .7;
+    const radius=1.1;
+
 
     for(
         const obstacle
         of obstacles
     ){
 
+        const box=
+            new THREE.Box3()
+                .setFromObject(
+                    obstacle
+                );
+
+
+        box.expandByScalar(.3);
+
+
         if(
-            Math.abs(
-                position.x -
-                obstacle.x
-            ) <
-            obstacle.width/2 +
-            radius
-            &&
-            Math.abs(
-                position.z -
-                obstacle.z
-            ) <
-            obstacle.depth/2 +
-            radius
+
+            position.x>
+            box.min.x-radius &&
+
+            position.x<
+            box.max.x+radius &&
+
+            position.z>
+            box.min.z-radius &&
+
+            position.z<
+            box.max.z+radius
+
         ){
 
             return true;
@@ -2162,665 +2620,433 @@ function isBlocked(
 
     }
 
+
     return false;
 
 }
 
+
 /* =========================================================
-   JUMP
+   HIDE SYSTEM
 ========================================================= */
 
-function jump(){
+function getNearestHidingSpot(){
 
-    if(
-        !gameStarted ||
-        gameFinished ||
-        isHidden ||
-        !isGrounded
-    ){
-        return;
-    }
+    let nearest=null;
 
-    verticalVelocity =
-        jumpPower;
+    let nearestDistance=Infinity;
 
-    isGrounded = false;
 
-    showMessage(
-        "🦘 JUMP!"
+    hidingSpots.forEach(
+        spot=>{
+
+            const dx=
+                player.position.x-
+                spot.x;
+
+            const dz=
+                player.position.z-
+                spot.z;
+
+
+            const distance=
+                Math.sqrt(
+                    dx*dx+
+                    dz*dz
+                );
+
+
+            if(
+                distance<
+                nearestDistance
+            ){
+
+                nearestDistance=
+                    distance;
+
+                nearest=spot;
+
+            }
+
+        }
     );
+
+
+    return {
+
+        spot:nearest,
+
+        distance:nearestDistance
+
+    };
 
 }
 
-/* =========================================================
-   INVINCIBLE
-========================================================= */
 
-function activateInvincible(){
+function toggleHide(){
 
-    if(
-        !gameStarted ||
-        gameFinished
-    ){
-        return;
-    }
-
-    if(
-        invincible ||
-        invincibleCooldown > 0
-    ){
-
+    if(!gameStarted)
         return;
 
-    }
 
-    invincible = true;
+    if(isHidden){
 
-    invincibleTimer =
-        invincibleDuration;
+        isHidden=false;
 
-    showMessage(
-        "🛡️ INVINCIBLE! You cannot be caught!"
-    );
+        player.visible=true;
 
-    updateSkillUI();
-
-}
-
-/* =========================================================
-   DASH
-========================================================= */
-
-function activateDash(){
-
-    if(
-        !gameStarted ||
-        gameFinished
-    ){
-        return;
-    }
-
-    if(
-        dashActive ||
-        dashCooldown > 0
-    ){
-
-        return;
-
-    }
-
-    let forward = 0;
-
-    let strafe = 0;
-
-    if(
-        keys["KeyW"] ||
-        keys["ArrowUp"]
-    ){
-        forward += 1;
-    }
-
-    if(
-        keys["KeyS"] ||
-        keys["ArrowDown"]
-    ){
-        forward -= 1;
-    }
-
-    if(
-        keys["KeyA"] ||
-        keys["ArrowLeft"]
-    ){
-        strafe -= 1;
-    }
-
-    if(
-        keys["KeyD"] ||
-        keys["ArrowRight"]
-    ){
-        strafe += 1;
-    }
-
-    forward += mobileForward;
-
-    strafe += mobileStrafe;
-
-    const direction =
-        new THREE.Vector3();
-
-    const forwardVector =
-        new THREE.Vector3(
-            -Math.sin(cameraYaw),
-            0,
-            -Math.cos(cameraYaw)
+        setMessage(
+            "You came out of hiding."
         );
 
-    const rightVector =
+        updateStatus("SAFE");
+
+        return;
+
+    }
+
+
+    const nearest=
+        getNearestHidingSpot();
+
+
+    if(
+        nearest.distance<=
+        nearest.spot.radius
+    ){
+
+        isHidden=true;
+
+        player.visible=false;
+
+        keys.sprint=false;
+
+        setMessage(
+            "🫣 You're hidden. Stay quiet..."
+        );
+
+        updateStatus(
+            "HIDDEN"
+        );
+
+        hideAlert();
+
+    }
+    else{
+
+        setMessage(
+            "You need to get closer to a hiding spot! 🫣"
+        );
+
+    }
+
+}
+
+
+/* =========================================================
+   PLAYER MOVEMENT
+========================================================= */
+
+function updatePlayer(delta){
+
+    if(!gameStarted)
+        return;
+
+
+    if(isHidden)
+        return;
+
+
+    let forward=0;
+
+    let strafe=0;
+
+
+    if(keys.forward)
+        forward+=1;
+
+    if(keys.backward)
+        forward-=1;
+
+    if(keys.left)
+        strafe-=1;
+
+    if(keys.right)
+        strafe+=1;
+
+
+    /*
+       MOBILE JOYSTICK
+    */
+
+    if(
+        Math.abs(joystickY)>.05 ||
+        Math.abs(joystickX)>.05
+    ){
+
+        forward=
+            -joystickY;
+
+        strafe=
+            joystickX;
+
+    }
+
+
+    if(
+        forward===0 &&
+        strafe===0
+    ){
+
+        updateStamina(delta,false);
+
+        return;
+
+    }
+
+
+    const sprinting=
+        keys.sprint &&
+        stamina>0;
+
+
+    const speed=
+        (
+            sprinting
+            ? 21
+            : 10
+        )*delta;
+
+
+    updateStamina(
+        delta,
+        sprinting
+    );
+
+
+    const forwardVector=
+        new THREE.Vector3(
+            Math.sin(cameraYaw),
+            0,
+            Math.cos(cameraYaw)
+        );
+
+
+    const rightVector=
         new THREE.Vector3(
             Math.cos(cameraYaw),
             0,
             -Math.sin(cameraYaw)
         );
 
-    if(
-        Math.abs(forward) < .01 &&
-        Math.abs(strafe) < .01
-    ){
 
-        direction.copy(
-            forwardVector
-        );
+    const direction=
+        new THREE.Vector3();
 
-    }else{
 
-        direction
-            .addScaledVector(
-                forwardVector,
-                forward
-            )
-            .addScaledVector(
-                rightVector,
-                strafe
-            );
-
-        direction.normalize();
-
-    }
-
-    dashDirection.copy(
-        direction
+    direction.addScaledVector(
+        forwardVector,
+        -forward
     );
 
-    dashActive = true;
 
-    dashTimer =
-        dashDuration;
-
-    dashCooldown =
-        dashCooldownTime;
-
-    showMessage(
-        "💨 DASH!"
+    direction.addScaledVector(
+        rightVector,
+        strafe
     );
 
-    updateSkillUI();
 
-}
+    direction.normalize();
 
-/* =========================================================
-   SKILL UPDATE
-========================================================= */
 
-function updateSkills(
-    delta
-){
+    const next=
+        player.position.clone();
 
-    if(invincible){
 
-        invincibleTimer -= delta;
+    next.x+=
+        direction.x*
+        speed;
 
-        if(
-            invincibleTimer <= 0
-        ){
+    next.z+=
+        direction.z*
+        speed;
 
-            invincible = false;
 
-            showMessage(
-                "🛡️ Invincibility ended."
+    next.x=
+        THREE.MathUtils.clamp(
+            next.x,
+            -37,
+            37
+        );
+
+    next.z=
+        THREE.MathUtils.clamp(
+            next.z,
+            -37,
+            37
+        );
+
+
+    if(
+        !isBlocked(next)
+    ){
+
+        player.position.copy(
+            next
+        );
+
+    }
+
+
+    if(
+        direction.length()>0
+    ){
+
+        const targetRotation=
+            Math.atan2(
+                direction.x,
+                direction.z
             );
 
-        }
+
+        player.rotation.y=
+            THREE.MathUtils.lerp(
+                player.rotation.y,
+                targetRotation,
+                .18
+            );
 
     }
 
-    if(
-        invincibleCooldown > 0
-    ){
 
-        invincibleCooldown -=
-            delta;
-
-        if(
-            invincibleCooldown < 0
-        ){
-            invincibleCooldown = 0;
-        }
-
-    }
-
-    if(
-        dashCooldown > 0
-    ){
-
-        dashCooldown -=
-            delta;
-
-        if(
-            dashCooldown < 0
-        ){
-            dashCooldown = 0;
-        }
-
-    }
-
-    updateSkillUI();
+    body.position.y=
+        1.25+
+        Math.sin(
+            performance.now()*.015
+        )*.07;
 
 }
 
-/* =========================================================
-   SKILL UI
-========================================================= */
-
-function updateSkillUI(){
-
-    const skill1 =
-        document.getElementById(
-            "skill1Button"
-        );
-
-    const skill2 =
-        document.getElementById(
-            "skill2Button"
-        );
-
-    const cooldown1 =
-        document.getElementById(
-            "skill1Cooldown"
-        );
-
-    const cooldown2 =
-        document.getElementById(
-            "skill2Cooldown"
-        );
-
-    if(invincible){
-
-        cooldown1.textContent =
-            Math.ceil(
-                invincibleTimer
-            ) + "s";
-
-        skill1.classList.remove(
-            "ready"
-        );
-
-    }else if(
-        invincibleCooldown > 0
-    ){
-
-        cooldown1.textContent =
-            "CD " +
-            Math.ceil(
-                invincibleCooldown
-            ) +
-            "s";
-
-        skill1.classList.remove(
-            "ready"
-        );
-
-    }else{
-
-        cooldown1.textContent =
-            "READY";
-
-        skill1.classList.add(
-            "ready"
-        );
-
-    }
-
-    if(
-        dashActive
-    ){
-
-        cooldown2.textContent =
-            "DASHING";
-
-        skill2.classList.remove(
-            "ready"
-        );
-
-    }else if(
-        dashCooldown > 0
-    ){
-
-        cooldown2.textContent =
-            "CD " +
-            Math.ceil(
-                dashCooldown
-            ) +
-            "s";
-
-        skill2.classList.remove(
-            "ready"
-        );
-
-    }else{
-
-        cooldown2.textContent =
-            "READY";
-
-        skill2.classList.add(
-            "ready"
-        );
-
-    }
-
-}
 
 /* =========================================================
    STAMINA
 ========================================================= */
 
-function updateStamina(){
+function updateStamina(
+    delta,
+    sprinting
+){
+
+    if(sprinting){
+
+        stamina-=
+            38*delta;
+
+    }
+    else{
+
+        stamina+=
+            25*delta;
+
+    }
+
+
+    stamina=
+        THREE.MathUtils.clamp(
+            stamina,
+            0,
+            100
+        );
+
 
     document
         .getElementById(
-            "staminaBar"
+            "stamina"
         )
-        .style.width =
-            stamina + "%";
+        .style.width=
+        stamina+"%";
 
 }
 
-/* =========================================================
-   HEART COLLECTION
-========================================================= */
-
-function updateHearts(){
-
-    for(
-        let i=hearts.length-1;
-        i>=0;
-        i--
-    ){
-
-        const heart =
-            hearts[i];
-
-        if(
-            heart.userData.collected
-        ){
-            continue;
-        }
-
-        heart.rotation.y +=
-            .025;
-
-        heart.position.y =
-            heart.userData.baseY +
-            Math.sin(
-                performance.now()*.003 +
-                i
-            )*.25;
-
-        const distance =
-            player.position.distanceTo(
-                heart.position
-            );
-
-        if(
-            distance < 2
-        ){
-
-            heart.userData.collected =
-                true;
-
-            scene.remove(
-                heart
-            );
-
-            collectedHearts++;
-
-            showMessage(
-                "❤️ Heart collected!"
-            );
-
-            updateHUD();
-
-        }
-
-    }
-
-}
 
 /* =========================================================
-   ENEMY AI
+   HEARTS
 ========================================================= */
 
-function updateEnemies(
-    delta
-){
+function updateHearts(time){
 
-    playerBeingChased = false;
-
-    searching = false;
-
-    for(
-        const enemy
-        of enemies
-    ){
-
-        const sees =
-            enemyCanSeePlayer(
-                enemy
-            );
-
-        if(
-            sees &&
-            !isHidden
-        ){
-
-            enemy.state =
-                "CHASE";
-
-            enemy.lastSeen.copy(
-                player.position
-            );
-
-            enemy.searchTimer = 4;
-
-        }
-
-        if(
-            enemy.state ===
-            "CHASE"
-        ){
-
-            playerBeingChased = true;
-
-            const direction =
-                player.position.clone()
-                    .sub(
-                        enemy.mesh.position
-                    );
-
-            direction.y = 0;
-
-            const distance =
-                direction.length();
-
-            if(distance > .1){
-
-                direction.normalize();
-
-                enemy.mesh.position.add(
-                    direction.multiplyScalar(
-                        enemy.chaseSpeed *
-                        delta
-                    )
-                );
-
-                enemy.mesh.lookAt(
-                    player.position.x,
-                    enemy.mesh.position.y,
-                    player.position.z
-                );
-
-            }
+    hearts.forEach(
+        heart=>{
 
             if(
-                !sees
-            ){
+                heart.collected
+            )
+                return;
 
-                enemy.state =
-                    "SEARCH";
 
-                enemy.searchTimer = 4;
+            heart.object.rotation.y+=
+                .025;
 
-            }
 
-            const catchDistance =
-                enemy.mesh.position
-                    .distanceTo(
-                        player.position
-                    );
-
-            if(
-                catchDistance < 1.7
-            ){
-
-                caughtByEnemy(
-                    enemy
-                );
-
-            }
-
-        }else if(
-            enemy.state ===
-            "SEARCH"
-        ){
-
-            searching = true;
-
-            enemy.searchTimer -=
-                delta;
-
-            const direction =
-                enemy.lastSeen.clone()
-                    .sub(
-                        enemy.mesh.position
-                    );
-
-            direction.y = 0;
-
-            if(
-                direction.length() > .8
-            ){
-
-                direction.normalize();
-
-                enemy.mesh.position.add(
-                    direction.multiplyScalar(
-                        enemy.speed *
-                        delta
-                    )
-                );
-
-            }
-
-            if(
-                enemy.searchTimer <= 0
-            ){
-
-                enemy.state =
-                    "PATROL";
-
-            }
-
-        }else{
-
-            enemy.patrolAngle +=
-                delta * .45;
-
-            const targetX =
-                enemy.patrolCenter.x +
-                Math.cos(
-                    enemy.patrolAngle
-                ) *
-                enemy.patrolRadius;
-
-            const targetZ =
-                enemy.patrolCenter.z +
+            heart.object.position.y=
+                heart.baseY+
                 Math.sin(
-                    enemy.patrolAngle
-                ) *
-                enemy.patrolRadius;
+                    time*.003+
+                    heart.object.position.x
+                )*.4;
 
-            const target =
-                new THREE.Vector3(
-                    targetX,
-                    0,
-                    targetZ
+
+            const distance=
+                player.position.distanceTo(
+                    heart.object.position
                 );
 
-            const direction =
-                target.clone()
-                    .sub(
-                        enemy.mesh.position
-                    );
-
-            direction.y = 0;
 
             if(
-                direction.length() > .1
+                distance<2.4
             ){
 
-                direction.normalize();
+                heart.collected=true;
 
-                enemy.mesh.position.add(
-                    direction.multiplyScalar(
-                        enemy.speed *
-                        delta
+                scene.remove(
+                    heart.object
+                );
+
+                score++;
+
+
+                document
+                    .getElementById(
+                        "score"
                     )
-                );
+                    .innerText=
+                    score;
 
-                enemy.mesh.lookAt(
-                    target.x,
-                    enemy.mesh.position.y,
-                    target.z
-                );
+
+                if(score<12){
+
+                    setMessage(
+                        "Heart collected! ❤️ "+
+                        score+
+                        "/12"
+                    );
+
+                }
+                else{
+
+                    setMessage(
+                        "All hearts collected! Find the 💝"
+                    );
+
+                }
 
             }
 
         }
-
-    }
-
-    if(isHidden){
-
-        updateStatus(
-            "HIDDEN"
-        );
-
-    }else if(invincible){
-
-        updateStatus(
-            "INVINCIBLE"
-        );
-
-    }else if(playerBeingChased){
-
-        updateStatus(
-            "CHASE!"
-        );
-
-    }else if(searching){
-
-        updateStatus(
-            "SEARCHING"
-        );
-
-    }else{
-
-        updateStatus(
-            "SAFE"
-        );
-
-    }
+    );
 
 }
+
 
 /* =========================================================
    ENEMY VISION
@@ -2830,99 +3056,503 @@ function enemyCanSeePlayer(
     enemy
 ){
 
-    if(isHidden){
-
+    if(isHidden)
         return false;
 
-    }
 
-    const enemyPosition =
-        enemy.mesh.position.clone();
+    const enemyPos=
+        enemy.object.position;
 
-    enemyPosition.y = 1.6;
 
-    const playerPosition =
-        player.position.clone();
+    const playerPos=
+        player.position;
 
-    playerPosition.y += 1.2;
 
-    const direction =
-        playerPosition.clone()
-            .sub(
-                enemyPosition
-            );
+    const dx=
+        playerPos.x-
+        enemyPos.x;
 
-    const distance =
-        direction.length();
+    const dz=
+        playerPos.z-
+        enemyPos.z;
+
+
+    const distance=
+        Math.sqrt(
+            dx*dx+
+            dz*dz
+        );
+
+
+    const visionDistance=12;
+
 
     if(
-        distance >
-        enemy.visionRange
-    ){
-
+        distance>
+        visionDistance
+    )
         return false;
 
-    }
 
-    direction.normalize();
+    /*
+       Enemy's forward direction.
+       The enemy looks along -Z.
+    */
 
-    const forward =
+    const forward=
         new THREE.Vector3(
             0,
             0,
             -1
         );
 
+
     forward.applyQuaternion(
-        enemy.mesh.quaternion
+        enemy.object.quaternion
     );
 
-    const angle =
-        forward.angleTo(
+
+    const direction=
+        new THREE.Vector3(
+            dx,
+            0,
+            dz
+        ).normalize();
+
+
+    const dot=
+        forward.dot(
             direction
         );
 
-    if(
-        angle >
-        enemy.visionAngle / 2
-    ){
 
+    /*
+       About 70 degree field of view.
+    */
+
+    if(dot<.35)
         return false;
 
-    }
 
-    const raycaster =
+    /*
+       Simple obstacle line-of-sight.
+    */
+
+    const raycaster=
         new THREE.Raycaster();
 
+
+    const origin=
+        enemyPos.clone();
+
+    origin.y=1.5;
+
+
+    const target=
+        playerPos.clone();
+
+    target.y=1.5;
+
+
+    const rayDirection=
+        target.clone()
+            .sub(origin)
+            .normalize();
+
+
     raycaster.set(
-        enemyPosition,
-        direction
+        origin,
+        rayDirection
     );
 
-    const obstacleMeshes =
-        obstacles.map(
-            o => o.mesh
-        );
 
-    const intersections =
+    const hits=
         raycaster.intersectObjects(
-            obstacleMeshes,
+            obstacles,
             false
         );
 
+
+    const playerDistance=
+        origin.distanceTo(
+            target
+        );
+
+
     if(
-        intersections.length &&
-        intersections[0].distance <
-        distance
+        hits.length>0 &&
+        hits[0].distance<
+        playerDistance
     ){
 
         return false;
 
     }
+
 
     return true;
 
 }
+
+
+/* =========================================================
+   ENEMY AI
+========================================================= */
+
+function updateEnemies(
+    time,
+    delta
+){
+
+    let playerBeingChased=false;
+
+
+    enemies.forEach(
+        enemy=>{
+
+            const object=
+                enemy.object;
+
+
+            enemy.catchCooldown=
+                Math.max(
+                    0,
+                    enemy.catchCooldown-
+                    delta
+                );
+
+
+            const seesPlayer=
+                enemyCanSeePlayer(
+                    enemy
+                );
+
+
+            /*
+               PATROL
+            */
+
+            if(
+                enemy.state==="PATROL"
+            ){
+
+                const t=
+                    time*.001+
+                    enemy.phase;
+
+
+                const targetX=
+                    enemy.startX+
+                    Math.sin(t*.6)*6;
+
+
+                const targetZ=
+                    enemy.startZ+
+                    Math.cos(t*.5)*4;
+
+
+                moveEnemyToward(
+                    enemy,
+                    targetX,
+                    targetZ,
+                    2.5,
+                    delta
+                );
+
+
+                if(seesPlayer){
+
+                    enemy.state=
+                        "CHASE";
+
+
+                    enemy.lastKnown.copy(
+                        player.position
+                    );
+
+
+                    showAlert(
+                        "👁️ HE SEES YOU! RUN!",
+                        false
+                    );
+
+
+                    setMessage(
+                        "🚨 RUN! Find a hiding spot! 🫣"
+                    );
+
+                }
+
+            }
+
+
+            /*
+               CHASE
+            */
+
+            else if(
+                enemy.state==="CHASE"
+            ){
+
+                playerBeingChased=true;
+
+
+                if(
+                    seesPlayer
+                ){
+
+                    enemy.lastKnown.copy(
+                        player.position
+                    );
+
+                }
+
+
+                moveEnemyToward(
+                    enemy,
+                    enemy.lastKnown.x,
+                    enemy.lastKnown.z,
+                    5.5,
+                    delta
+                );
+
+
+                /*
+                   If player hides,
+                   enemy loses her.
+                */
+
+                if(isHidden){
+
+                    enemy.state=
+                        "SEARCH";
+
+
+                    enemy.searchTimer=
+                        4;
+
+
+                    showAlert(
+                        "🔎 Where did she go?",
+                        true
+                    );
+
+                }
+
+
+                /*
+                   Catch
+                */
+
+                const distance=
+                    object.position.distanceTo(
+                        player.position
+                    );
+
+
+                if(
+                    distance<2.2 &&
+                    enemy.catchCooldown<=0 &&
+                    !isHidden
+                ){
+
+                    caughtByEnemy(
+                        enemy
+                    );
+
+                }
+
+
+                /*
+                   If enemy gets too far
+                   and loses vision.
+                */
+
+                if(
+                    !seesPlayer &&
+                    object.position.distanceTo(
+                        enemy.lastKnown
+                    )<2
+                ){
+
+                    enemy.state=
+                        "SEARCH";
+
+                    enemy.searchTimer=
+                        5;
+
+
+                    showAlert(
+                        "🔎 She disappeared...",
+                        true
+                    );
+
+                }
+
+            }
+
+
+            /*
+               SEARCH
+            */
+
+            else if(
+                enemy.state==="SEARCH"
+            ){
+
+                enemy.searchTimer-=
+                    delta;
+
+
+                moveEnemyToward(
+                    enemy,
+                    enemy.lastKnown.x,
+                    enemy.lastKnown.z,
+                    3,
+                    delta
+                );
+
+
+                if(
+                    seesPlayer
+                ){
+
+                    enemy.state=
+                        "CHASE";
+
+                    enemy.lastKnown.copy(
+                        player.position
+                    );
+
+
+                    showAlert(
+                        "👁️ HE FOUND YOU! RUN!",
+                        false
+                    );
+
+                }
+
+
+                if(
+                    enemy.searchTimer<=0
+                ){
+
+                    enemy.state=
+                        "PATROL";
+
+                    hideAlert();
+
+                }
+
+            }
+
+
+            object.rotation.y+=
+                .01;
+
+        }
+    );
+
+
+    if(
+        !playerBeingChased &&
+        !isHidden
+    ){
+
+        /*
+           Don't force status to SAFE
+           if another enemy is searching.
+        */
+
+        const searching=
+            enemies.some(
+                e=>
+                    e.state==="SEARCH"
+            );
+
+
+        if(!searching){
+
+            updateStatus(
+                "SAFE"
+            );
+
+        }
+
+    }
+
+}
+
+
+/* =========================================================
+   ENEMY MOVEMENT
+========================================================= */
+
+function moveEnemyToward(
+    enemy,
+    x,
+    z,
+    speed,
+    delta
+){
+
+    const object=
+        enemy.object;
+
+
+    const dx=
+        x-object.position.x;
+
+    const dz=
+        z-object.position.z;
+
+
+    const distance=
+        Math.sqrt(
+            dx*dx+
+            dz*dz
+        );
+
+
+    if(distance<.1)
+        return;
+
+
+    const direction=
+        new THREE.Vector3(
+            dx,
+            0,
+            dz
+        ).normalize();
+
+
+    object.position.x+=
+        direction.x*
+        speed*
+        delta;
+
+    object.position.z+=
+        direction.z*
+        speed*
+        delta;
+
+
+    const rotation=
+        Math.atan2(
+            direction.x,
+            direction.z
+        );
+
+
+    object.rotation.y=
+        THREE.MathUtils.lerp(
+            object.rotation.y,
+            rotation,
+            .1
+        );
+
+}
+
 
 /* =========================================================
    CAUGHT
@@ -2932,27 +3562,22 @@ function caughtByEnemy(
     enemy
 ){
 
-    if(invincible){
+    enemy.catchCooldown=3;
 
-        showMessage(
-            "🛡️ INVINCIBLE! He couldn't catch you!"
+
+    love-=20;
+
+
+    document
+        .getElementById(
+            "love"
+        )
+        .innerText=
+        Math.max(
+            0,
+            Math.floor(love)
         );
 
-        return;
-
-    }
-
-    love -= 20;
-
-    if(love < 0){
-        love = 0;
-    }
-
-    updateHUD();
-
-    showMessage(
-        "💔 You were caught! Run!"
-    );
 
     player.position.set(
         0,
@@ -2960,141 +3585,175 @@ function caughtByEnemy(
         30
     );
 
-    verticalVelocity = 0;
 
-    isGrounded = true;
+    enemy.state=
+        "PATROL";
 
-    stamina = 100;
 
-    isHidden = false;
+    hideAlert();
 
-    if(love <= 0){
 
-        love = 100;
+    setMessage(
+        "💔 He caught you! Run smarter next time!"
+    );
 
-        showMessage(
-            "❤️ Your love is too strong! Try again!"
+
+    if(love<=0){
+
+        love=100;
+
+        document
+            .getElementById(
+                "love"
+            )
+            .innerText="100";
+
+
+        setMessage(
+            "❤️ Love restored! Try again!"
         );
 
     }
 
 }
 
-/* =========================================================
-   HIDING
-========================================================= */
-
-function toggleHide(){
-
-    if(!gameStarted){
-        return;
-    }
-
-    if(isHidden){
-
-        isHidden = false;
-
-        showMessage(
-            "👀 You left your hiding spot."
-        );
-
-        return;
-
-    }
-
-    let near =
-        false;
-
-    for(
-        const spot
-        of hidingSpots
-    ){
-
-        const dx =
-            player.position.x -
-            spot.x;
-
-        const dz =
-            player.position.z -
-            spot.z;
-
-        const distance =
-            Math.sqrt(
-                dx*dx +
-                dz*dz
-            );
-
-        if(
-            distance <
-            spot.radius
-        ){
-
-            near = true;
-
-            break;
-
-        }
-
-    }
-
-    if(near){
-
-        isHidden = true;
-
-        showMessage(
-            "🫣 Hidden! He can't see you."
-        );
-
-    }else{
-
-        showMessage(
-            "❌ You need to be near a hiding spot."
-        );
-
-    }
-
-}
 
 /* =========================================================
    GOAL
 ========================================================= */
 
-function updateGoal(){
+function checkGoal(){
 
-    if(!goal){
-        return;
-    }
-
-    goal.rotation.y +=
-        .01;
-
-    const distance =
+    const distance=
         player.position.distanceTo(
             goal.position
         );
 
+
     if(
-        distance < 4
+        distance<4
     ){
 
-        if(
-            collectedHearts >=
-            hearts.length
-        ){
+        if(score<12){
 
-            finishGame();
-
-        }else{
-
-            showMessage(
-                "❤️ Collect all the hearts first!"
+            setMessage(
+                "You need all 12 hearts first! ❤️"
             );
 
+            return;
+
         }
+
+
+        gameStarted=false;
+
+
+        document
+            .getElementById(
+                "questionScreen"
+            )
+            .classList.remove(
+                "hidden"
+            );
 
     }
 
 }
+
+
+/* =========================================================
+   CAMERA FOLLOW
+========================================================= */
+
+function updateCamera(){
+
+    /*
+       Camera stays behind player.
+    */
+
+    const horizontal=
+        Math.cos(
+            cameraPitch
+        )*
+        cameraDistance;
+
+
+    const vertical=
+        Math.sin(
+            cameraPitch
+        )*
+        cameraDistance;
+
+
+    const cameraX=
+        player.position.x+
+        Math.sin(cameraYaw)*
+        horizontal;
+
+
+    const cameraZ=
+        player.position.z+
+        Math.cos(cameraYaw)*
+        horizontal;
+
+
+    const cameraY=
+        player.position.y+
+        2+
+        vertical;
+
+
+    const target=
+        new THREE.Vector3(
+            cameraX,
+            cameraY,
+            cameraZ
+        );
+
+
+    camera.position.lerp(
+        target,
+        .15
+    );
+
+
+    const lookAt=
+        player.position.clone();
+
+
+    lookAt.y+=1.3;
+
+
+    camera.lookAt(
+        lookAt
+    );
+
+}
+
+
+/* =========================================================
+   GOAL ANIMATION
+========================================================= */
+
+function updateGoal(time){
+
+    goalCore.rotation.y+=
+        .03;
+
+
+    goalCore.scale.setScalar(
+        1+
+        Math.sin(
+            time*.004
+        )*.12
+    );
+
+
+    ring.rotation.z+=
+        .025;
+
+}
+
 
 /* =========================================================
    FINISH
@@ -3102,22 +3761,28 @@ function updateGoal(){
 
 function finishGame(){
 
-    if(gameFinished){
-        return;
-    }
+    document
+        .getElementById(
+            "questionScreen"
+        )
+        .classList.add(
+            "hidden"
+        );
 
-    gameFinished = true;
 
     document
         .getElementById(
             "finalScreen"
         )
-        .style.display =
-            "flex";
+        .classList.remove(
+            "hidden"
+        );
+
 
     createConfetti();
 
 }
+
 
 /* =========================================================
    CONFETTI
@@ -3125,641 +3790,143 @@ function finishGame(){
 
 function createConfetti(){
 
+    const symbols=[
+        "❤️",
+        "💕",
+        "💖",
+        "💗",
+        "✨",
+        "🎉"
+    ];
+
+
     for(
         let i=0;
         i<100;
         i++
     ){
 
-        const geometry =
-            new THREE.BoxGeometry(
-                .15,
-                .15,
-                .15
+        const element=
+            document.createElement(
+                "div"
             );
 
-        const material =
-            new THREE.MeshBasicMaterial({
-                color:
-                    new THREE.Color(
-                        Math.random(),
-                        Math.random(),
-                        Math.random()
-                    )
-            });
 
-        const piece =
-            new THREE.Mesh(
-                geometry,
-                material
-            );
+        element.innerText=
+            symbols[
+                Math.floor(
+                    Math.random()*
+                    symbols.length
+                )
+            ];
 
-        piece.position.set(
-            player.position.x +
-                (Math.random()-.5)*10,
 
-            player.position.y +
-                Math.random()*8,
+        element.style.position=
+            "fixed";
 
-            player.position.z +
-                (Math.random()-.5)*10
+
+        element.style.left=
+            Math.random()*
+            100+
+            "vw";
+
+
+        element.style.top=
+            "-30px";
+
+
+        element.style.fontSize=
+            15+
+            Math.random()*25+
+            "px";
+
+
+        element.style.zIndex="100";
+
+
+        element.style.transition=
+            "transform 3s linear,opacity 3s";
+
+
+        document.body.appendChild(
+            element
         );
 
-        piece.userData.velocity =
-            new THREE.Vector3(
-                (Math.random()-.5)*2,
-                Math.random()*3,
-                (Math.random()-.5)*2
-            );
 
-        scene.add(piece);
-
-    }
-
-}
-
-/* =========================================================
-   CAMERA
-========================================================= */
-
-function updateCamera(){
-
-    cameraYaw =
-        THREE.MathUtils.lerp(
-            cameraYaw,
-            targetCameraYaw,
-            .15
-        );
-
-    cameraPitch =
-        THREE.MathUtils.lerp(
-            cameraPitch,
-            targetCameraPitch,
-            .15
-        );
-
-    const horizontalDistance =
-        cameraDistance *
-        Math.cos(
-            cameraPitch
-        );
-
-    const verticalDistance =
-        cameraDistance *
-        Math.sin(
-            cameraPitch
-        );
-
-    const cameraX =
-        player.position.x -
-        Math.sin(
-            cameraYaw
-        ) *
-        horizontalDistance;
-
-    const cameraZ =
-        player.position.z -
-        Math.cos(
-            cameraYaw
-        ) *
-        horizontalDistance;
-
-    const cameraY =
-        player.position.y +
-        3 +
-        verticalDistance;
-
-    const targetPosition =
-        new THREE.Vector3(
-            cameraX,
-            cameraY,
-            cameraZ
-        );
-
-    camera.position.lerp(
-        targetPosition,
-        .14
-    );
-
-    camera.lookAt(
-        player.position.x,
-        player.position.y + 1.4,
-        player.position.z
-    );
-
-}
-
-/* =========================================================
-   HUD
-========================================================= */
-
-function updateHUD(){
-
-    document
-        .getElementById(
-            "heartValue"
-        )
-        .textContent =
-            collectedHearts +
-            " / " +
-            hearts.length;
-
-    document
-        .getElementById(
-            "loveValue"
-        )
-        .textContent =
-            love + "%";
-
-}
-
-function updateStatus(
-    status
-){
-
-    document
-        .getElementById(
-            "statusValue"
-        )
-        .textContent =
-            status;
-
-}
-
-/* =========================================================
-   MESSAGE
-========================================================= */
-
-let messageTimer = null;
-
-function showMessage(
-    text
-){
-
-    const message =
-        document.getElementById(
-            "message"
-        );
-
-    message.textContent =
-        text;
-
-    clearTimeout(
-        messageTimer
-    );
-
-    messageTimer =
         setTimeout(
-            function(){
+            ()=>{
 
-                message.textContent =
-                    "❤️ Find all the hearts";
+                element.style.transform=
+                    "translateY(110vh) rotate(720deg)";
+
+                element.style.opacity="0";
 
             },
-            2500
+            50
         );
 
-}
 
-/* =========================================================
-   ALERT
-========================================================= */
+        setTimeout(
+            ()=>{
 
-function updateAlert(){
+                element.remove();
 
-    const alertBox =
-        document.getElementById(
-            "alertBox"
+            },
+            3500
         );
-
-    if(
-        playerBeingChased &&
-        !isHidden
-    ){
-
-        alertBox.style.display =
-            "block";
-
-        alertBox.classList.remove(
-            "searching"
-        );
-
-        alertBox.textContent =
-            invincible
-                ? "🛡️ HE SEES YOU — BUT YOU ARE INVINCIBLE!"
-                : "👁️ HE SEES YOU! RUN!";
-
-    }else if(
-        searching &&
-        !isHidden
-    ){
-
-        alertBox.style.display =
-            "block";
-
-        alertBox.classList.add(
-            "searching"
-        );
-
-        alertBox.textContent =
-            "🔎 HE LOST YOU — HE IS SEARCHING!";
-
-    }else{
-
-        alertBox.style.display =
-            "none";
 
     }
 
 }
 
-/* =========================================================
-   MOBILE
-========================================================= */
-
-let mobileForward = 0;
-
-let mobileStrafe = 0;
-
-let mobileSprint = false;
-
-let joystickActive = false;
-
-const joystickCenter = {
-    x:0,
-    y:0
-};
-
-function setupMobileControls(){
-
-    const joystick =
-        document.getElementById(
-            "joystick"
-        );
-
-    const knob =
-        document.getElementById(
-            "joystickKnob"
-        );
-
-    function updateJoystick(
-        clientX,
-        clientY
-    ){
-
-        const rect =
-            joystick.getBoundingClientRect();
-
-        const centerX =
-            rect.left +
-            rect.width/2;
-
-        const centerY =
-            rect.top +
-            rect.height/2;
-
-        let dx =
-            clientX -
-            centerX;
-
-        let dy =
-            clientY -
-            centerY;
-
-        const max =
-            rect.width/2 -
-            26;
-
-        const distance =
-            Math.sqrt(
-                dx*dx +
-                dy*dy
-            );
-
-        if(
-            distance > max
-        ){
-
-            dx =
-                dx / distance *
-                max;
-
-            dy =
-                dy / distance *
-                max;
-
-        }
-
-        knob.style.left =
-            `calc(50% + ${dx}px)`;
-
-        knob.style.top =
-            `calc(50% + ${dy}px)`;
-
-        mobileStrafe =
-            dx / max;
-
-        mobileForward =
-            -dy / max;
-
-    }
-
-    function resetJoystick(){
-
-        joystickActive = false;
-
-        mobileForward = 0;
-
-        mobileStrafe = 0;
-
-        knob.style.left =
-            "50%";
-
-        knob.style.top =
-            "50%";
-
-    }
-
-    joystick.addEventListener(
-        "touchstart",
-        function(e){
-
-            e.preventDefault();
-
-            joystickActive = true;
-
-            const touch =
-                e.touches[0];
-
-            updateJoystick(
-                touch.clientX,
-                touch.clientY
-            );
-
-        },
-        {passive:false}
-    );
-
-    joystick.addEventListener(
-        "touchmove",
-        function(e){
-
-            e.preventDefault();
-
-            if(!joystickActive){
-                return;
-            }
-
-            const touch =
-                e.touches[0];
-
-            updateJoystick(
-                touch.clientX,
-                touch.clientY
-            );
-
-        },
-        {passive:false}
-    );
-
-    joystick.addEventListener(
-        "touchend",
-        function(){
-
-            resetJoystick();
-
-        }
-    );
-
-    const sprint =
-        document.getElementById(
-            "sprintButton"
-        );
-
-    sprint.addEventListener(
-        "touchstart",
-        function(e){
-
-            e.preventDefault();
-
-            mobileSprint = true;
-
-        },
-        {passive:false}
-    );
-
-    sprint.addEventListener(
-        "touchend",
-        function(e){
-
-            e.preventDefault();
-
-            mobileSprint = false;
-
-        },
-        {passive:false}
-    );
-
-    const jumpButton =
-        document.getElementById(
-            "jumpButton"
-        );
-
-    jumpButton.addEventListener(
-        "touchstart",
-        function(e){
-
-            e.preventDefault();
-
-            jump();
-
-        },
-        {passive:false}
-    );
-
-    const hideButton =
-        document.getElementById(
-            "hideButton"
-        );
-
-    hideButton.addEventListener(
-        "touchstart",
-        function(e){
-
-            e.preventDefault();
-
-            toggleHide();
-
-        },
-        {passive:false}
-    );
-
-}
-
-/* =========================================================
-   MOBILE CAMERA
-   UNCHANGED
-========================================================= */
-
-let touchLookActive = false;
-
-let lastTouchX = 0;
-
-let lastTouchY = 0;
-
-document.addEventListener(
-    "touchstart",
-    function(e){
-
-        if(
-            e.touches.length !== 1
-        ){
-            return;
-        }
-
-        const touch =
-            e.touches[0];
-
-        if(
-            touch.clientX < 180 &&
-            touch.clientY >
-            window.innerHeight - 180
-        ){
-            return;
-        }
-
-        touchLookActive = true;
-
-        lastTouchX =
-            touch.clientX;
-
-        lastTouchY =
-            touch.clientY;
-
-    },
-    {passive:true}
-);
-
-document.addEventListener(
-    "touchmove",
-    function(e){
-
-        if(
-            !touchLookActive ||
-            e.touches.length !== 1
-        ){
-            return;
-        }
-
-        const touch =
-            e.touches[0];
-
-        const dx =
-            touch.clientX -
-            lastTouchX;
-
-        const dy =
-            touch.clientY -
-            lastTouchY;
-
-        targetCameraYaw -=
-            dx * .006;
-
-        targetCameraPitch -=
-            dy * .006;
-
-        targetCameraPitch =
-            THREE.MathUtils.clamp(
-                targetCameraPitch,
-                .12,
-                1.15
-            );
-
-        lastTouchX =
-            touch.clientX;
-
-        lastTouchY =
-            touch.clientY;
-
-    },
-    {passive:true}
-);
-
-document.addEventListener(
-    "touchend",
-    function(){
-
-        touchLookActive = false;
-
-    }
-);
-
-/* =========================================================
-   RESIZE
-========================================================= */
-
-function onResize(){
-
-    camera.aspect =
-        window.innerWidth /
-        window.innerHeight;
-
-    camera.updateProjectionMatrix();
-
-    renderer.setSize(
-        window.innerWidth,
-        window.innerHeight
-    );
-
-}
 
 /* =========================================================
    ANIMATION
 ========================================================= */
 
-function animate(){
+function animate(time){
 
     requestAnimationFrame(
         animate
     );
 
-    const delta =
+
+    const delta=
         Math.min(
-            clock.getDelta(),
+            (time-lastTime)/1000,
             .05
         );
 
-    if(gameStarted){
 
-        updatePlayer(
-            delta
-        );
+    lastTime=time;
 
-        updateHearts();
 
-        updateEnemies(
-            delta
-        );
+    updatePlayer(
+        delta
+    );
 
-        updateGoal();
 
-        updateSkills(
-            delta
-        );
+    updateHearts(
+        time
+    );
 
-        updateAlert();
 
-        updateCamera();
+    updateEnemies(
+        time,
+        delta
+    );
 
-    }else{
 
-        if(player){
+    updateGoal(
+        time
+    );
 
-            updateCamera();
 
-        }
+    updateCamera();
 
-    }
+
+    checkGoal();
+
 
     renderer.render(
         scene,
@@ -3768,13 +3935,36 @@ function animate(){
 
 }
 
+
+animate(0);
+
+
 /* =========================================================
-   INITIALIZE
+   RESIZE
 ========================================================= */
 
-init();
+window.addEventListener(
+    "resize",
+    ()=>{
+
+        camera.aspect=
+            window.innerWidth/
+            window.innerHeight;
+
+
+        camera.updateProjectionMatrix();
+
+
+        renderer.setSize(
+            window.innerWidth,
+            window.innerHeight
+        );
+
+    }
+);
 
 </script>
 
 </body>
-</html>
+</html> i want only where you you go your courser of the mouse it will susunod lang, and add a jump dont change anything
+
